@@ -72,6 +72,10 @@ python scripts/run_benchmarks.py \
   --dataset-http-cache-dir artifacts/datasets/hf_http_cache \
   --dataset-http-cache-read \
   --dataset-http-cache-write \
+  --dataset-token-cache-dir artifacts/datasets/token_pool_cache \
+  --dataset-token-cache-read \
+  --dataset-token-cache-write \
+  --dataset-token-cache-prime-train-tokens 8388608 \
   --lr 6e-4 \
   --lr-schedule warmup_cosine \
   --lr-warmup-steps 500 \
@@ -107,6 +111,23 @@ Hardware-aware mode is on by default and can downshift `batch_size` or
 `token_pool_batches` when requested settings exceed device/host limits.
 For `hf_stream` mode, set `HF_HOME` / `HF_DATASETS_CACHE` to a persistent path
 to reuse downloaded shards across reruns.
+Token pool cache is shape-agnostic (batch/seq changes reuse the same cached pool
+when dataset/tokenizer/partition settings match). Use
+`--dataset-token-cache-prime-train-tokens` to prefill a larger train pool once
+and amortize later runs.
+
+To pre-stage data only (no model init/JIT), run:
+```bash
+python scripts/run_benchmarks.py \
+  --data-source hf_http \
+  --dataset-name HuggingFaceFW/fineweb \
+  --dataset-config sample-10BT \
+  --dataset-tokenizer-backend tiktoken \
+  --dataset-tokenizer-name cl100k_base \
+  --dataset-eval-holdout-fraction 0.01 \
+  --prepare-data-only \
+  --dataset-token-cache-prime-train-tokens 8388608
+```
 
 If a dataset is unavailable in your environment, switch to another public stream
 (for example `--dataset-name cerebras/SlimPajama-627B`) or log in with

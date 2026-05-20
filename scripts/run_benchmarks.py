@@ -25,6 +25,7 @@ from typing import Any, Callable, Dict, Iterable, Iterator, List, Mapping, Optio
 
 import jax
 import jax.numpy as jnp
+import numpy as np
 import optax
 
 from modulus.optim.groups import make_grouped_hyperball_tx, make_llm_default_labels
@@ -108,6 +109,10 @@ class DatasetConfig:
     http_cache_dir: Optional[str]
     http_cache_read: bool
     http_cache_write: bool
+    token_cache_dir: Optional[str]
+    token_cache_read: bool
+    token_cache_write: bool
+    token_cache_prime_train_tokens: int
     tokenizer_backend: str
     tokenizer_name: Optional[str]
     token_id_projection: str
@@ -1395,6 +1400,121 @@ def _extract_text(example: Mapping[str, Any], text_keys: Sequence[str]) -> Optio
     return None
 
 
+def _token_pool_cache_spec(
+    *,
+    source: str,
+    ds_cfg: DatasetConfig,
+    split: str,
+    seed: int,
+    partition_mode: str,
+    eval_holdout_fraction: float,
+    partition_salt: int,
+    max_docs: Optional[int],
+) -> Mapping[str, Any]:
+    return {
+        "version": 3,
+        "source": source,
+        "dataset": ds_cfg.name,
+        "config": ds_cfg.config,
+        "split": split,
+        "seed": seed,
+        "text_keys": list(ds_cfg.text_keys),
+        "partition_mode": partition_mode,
+        "eval_holdout_fraction": eval_holdout_fraction,
+        "partition_salt": partition_salt,
+        "max_doc_tokens": ds_cfg.max_doc_tokens,
+        "max_docs": max_docs,
+        "tokenizer_backend": ds_cfg.tokenizer_backend,
+        "tokenizer_name": ds_cfg.tokenizer_name,
+        "token_id_projection": ds_cfg.token_id_projection,
+    }
+
+
+def _token_pool_cache_key(spec: Mapping[str, Any]) -> str:
+    payload = json.dumps(spec, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _try_load_cached_token_pool(
+    *,
+    cache_root: Optional[str],
+    cache_read: bool,
+    key_spec: Mapping[str, Any],
+    required_tokens: int,
+    progress_label: str,
+) -> Optional[jnp.ndarray]:
+    if not cache_read or not cache_root:
+        return None
+    root = Path(cache_root)
+    root.mkdir(parents=True, exist_ok=True)
+    cache_key = _token_pool_cache_key(key_spec)
+    bin_path = root / f"{cache_key}.u32.bin"
+    meta_path = root / f"{cache_key}.meta.json"
+    if not bin_path.exists() or not meta_path.exists():
+        return None
+    try:
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        token_count = int(meta.get("token_count", 0))
+        if token_count < required_tokens:
+            return None
+        arr = np.fromfile(bin_path, dtype=np.uint32, count=required_tokens)
+        if arr.size < required_tokens:
+            return None
+        print(
+            f"{progress_label}: token pool cache hit "
+            f"({required_tokens} tokens) at {bin_path}"
+        )
+        return jnp.asarray(arr.astype(np.int32, copy=False), dtype=jnp.int32)
+    except Exception:
+        return None
+
+
+def _write_cached_token_pool(
+    *,
+    cache_root: Optional[str],
+    cache_write: bool,
+    key_spec: Mapping[str, Any],
+    tokens: jnp.ndarray,
+    progress_label: str,
+) -> None:
+    if not cache_write or not cache_root:
+        return
+    root = Path(cache_root)
+    root.mkdir(parents=True, exist_ok=True)
+    cache_key = _token_pool_cache_key(key_spec)
+    bin_path = root / f"{cache_key}.u32.bin"
+    meta_path = root / f"{cache_key}.meta.json"
+    tmp_bin = bin_path.with_suffix(".tmp")
+    tmp_meta = meta_path.with_suffix(".tmp")
+    try:
+        host = np.asarray(jax.device_get(tokens), dtype=np.uint32)
+        host.tofile(tmp_bin)
+        meta = {
+            "version": 1,
+            "token_count": int(host.size),
+            "dtype": "uint32",
+            "key_spec": key_spec,
+        }
+        tmp_meta.write_text(json.dumps(meta, sort_keys=True), encoding="utf-8")
+        tmp_bin.replace(bin_path)
+        tmp_meta.replace(meta_path)
+        print(
+            f"{progress_label}: token pool cache write "
+            f"({host.size} tokens) -> {bin_path}"
+        )
+    except Exception:
+        try:
+            if tmp_bin.exists():
+                tmp_bin.unlink()
+        except Exception:
+            pass
+        try:
+            if tmp_meta.exists():
+                tmp_meta.unlink()
+        except Exception:
+            pass
+
+
 def _make_hf_text_iterator(
     *,
     dataset_name: str,
@@ -1543,8 +1663,32 @@ def _make_hf_stream_batches(
     partition_mode: str,
     eval_holdout_fraction: float,
     partition_salt: int,
+    cache_seed: int,
 ) -> jnp.ndarray:
     required_tokens = num_batches * batch_size * seq_len
+    collect_tokens = required_tokens
+    if partition_mode == "train" and ds_cfg.token_cache_prime_train_tokens > collect_tokens:
+        collect_tokens = ds_cfg.token_cache_prime_train_tokens
+    cache_spec = _token_pool_cache_spec(
+        source="hf_stream",
+        ds_cfg=ds_cfg,
+        split=split,
+        seed=cache_seed,
+        partition_mode=partition_mode,
+        eval_holdout_fraction=eval_holdout_fraction,
+        partition_salt=partition_salt,
+        max_docs=max_docs,
+    )
+    cached = _try_load_cached_token_pool(
+        cache_root=ds_cfg.token_cache_dir,
+        cache_read=ds_cfg.token_cache_read,
+        key_spec=cache_spec,
+        required_tokens=required_tokens,
+        progress_label=f"hf_stream[{split}]",
+    )
+    if cached is not None:
+        return cached.reshape((num_batches, batch_size, seq_len))
+
     text_iter = _make_hf_text_iterator(
         dataset_name=ds_cfg.name,
         dataset_config=ds_cfg.config,
@@ -1556,7 +1700,7 @@ def _make_hf_stream_batches(
     )
     flat, docs_seen = _collect_stream_token_ids(
         text_iter,
-        required_tokens=required_tokens,
+        required_tokens=collect_tokens,
         tokenize_text=tokenize_text,
         max_docs=max_docs,
         progress_label=f"hf_stream[{split}]",
@@ -1565,9 +1709,16 @@ def _make_hf_stream_batches(
         partition_salt=partition_salt,
     )
     print(
-        f"hf_stream[{split}]: collected {required_tokens} tokens from {docs_seen} documents."
+        f"hf_stream[{split}]: collected {collect_tokens} tokens from {docs_seen} documents."
     )
-    return flat.reshape((num_batches, batch_size, seq_len))
+    _write_cached_token_pool(
+        cache_root=ds_cfg.token_cache_dir,
+        cache_write=ds_cfg.token_cache_write,
+        key_spec=cache_spec,
+        tokens=flat,
+        progress_label=f"hf_stream[{split}]",
+    )
+    return flat[:required_tokens].reshape((num_batches, batch_size, seq_len))
 
 
 def _make_hf_http_text_iterator(
@@ -1725,8 +1876,32 @@ def _make_hf_http_batches(
     partition_mode: str,
     eval_holdout_fraction: float,
     partition_salt: int,
+    cache_seed: int,
 ) -> jnp.ndarray:
     required_tokens = num_batches * batch_size * seq_len
+    collect_tokens = required_tokens
+    if partition_mode == "train" and ds_cfg.token_cache_prime_train_tokens > collect_tokens:
+        collect_tokens = ds_cfg.token_cache_prime_train_tokens
+    cache_spec = _token_pool_cache_spec(
+        source="hf_http",
+        ds_cfg=ds_cfg,
+        split=split,
+        seed=cache_seed,
+        partition_mode=partition_mode,
+        eval_holdout_fraction=eval_holdout_fraction,
+        partition_salt=partition_salt,
+        max_docs=max_docs,
+    )
+    cached = _try_load_cached_token_pool(
+        cache_root=ds_cfg.token_cache_dir,
+        cache_read=ds_cfg.token_cache_read,
+        key_spec=cache_spec,
+        required_tokens=required_tokens,
+        progress_label=f"hf_http[{split}]",
+    )
+    if cached is not None:
+        return cached.reshape((num_batches, batch_size, seq_len))
+
     text_iter = _make_hf_http_text_iterator(
         dataset_name=ds_cfg.name,
         dataset_config=ds_cfg.config,
@@ -1743,7 +1918,7 @@ def _make_hf_http_batches(
     )
     flat, docs_seen = _collect_stream_token_ids(
         text_iter,
-        required_tokens=required_tokens,
+        required_tokens=collect_tokens,
         tokenize_text=tokenize_text,
         max_docs=max_docs,
         progress_label=f"hf_http[{split}]",
@@ -1752,9 +1927,16 @@ def _make_hf_http_batches(
         partition_salt=partition_salt,
     )
     print(
-        f"hf_http[{split}]: collected {required_tokens} tokens from {docs_seen} documents."
+        f"hf_http[{split}]: collected {collect_tokens} tokens from {docs_seen} documents."
     )
-    return flat.reshape((num_batches, batch_size, seq_len))
+    _write_cached_token_pool(
+        cache_root=ds_cfg.token_cache_dir,
+        cache_write=ds_cfg.token_cache_write,
+        key_spec=cache_spec,
+        tokens=flat,
+        progress_label=f"hf_http[{split}]",
+    )
+    return flat[:required_tokens].reshape((num_batches, batch_size, seq_len))
 
 
 def run(args: argparse.Namespace) -> None:
@@ -1823,6 +2005,15 @@ def run(args: argparse.Namespace) -> None:
         raise ValueError(
             "--dataset-http-cache-dir is required when cache read/write is enabled"
         )
+    if (
+        (args.dataset_token_cache_read or args.dataset_token_cache_write)
+        and not args.dataset_token_cache_dir
+    ):
+        raise ValueError(
+            "--dataset-token-cache-dir is required when token cache read/write is enabled"
+        )
+    if args.dataset_token_cache_prime_train_tokens < 0:
+        raise ValueError("--dataset-token-cache-prime-train-tokens must be >= 0")
     if args.max_steps is not None and args.max_steps < args.steps:
         raise ValueError("--max-steps must be >= --steps")
     if args.target_train_tokens is not None and args.target_train_tokens < 1:
@@ -2038,6 +2229,10 @@ def run(args: argparse.Namespace) -> None:
         http_cache_dir=args.dataset_http_cache_dir,
         http_cache_read=args.dataset_http_cache_read,
         http_cache_write=args.dataset_http_cache_write,
+        token_cache_dir=args.dataset_token_cache_dir,
+        token_cache_read=args.dataset_token_cache_read,
+        token_cache_write=args.dataset_token_cache_write,
+        token_cache_prime_train_tokens=args.dataset_token_cache_prime_train_tokens,
         tokenizer_backend=tokenizer_backend,
         tokenizer_name=tokenizer_name,
         token_id_projection=token_id_projection,
@@ -2169,6 +2364,12 @@ def run(args: argparse.Namespace) -> None:
             f"backend={ds_cfg.tokenizer_backend}, name={tokenizer_name_display}, "
             f"projection={ds_cfg.token_id_projection}"
         )
+        print(
+            "Token pool cache: "
+            f"dir={ds_cfg.token_cache_dir!r}, "
+            f"read={ds_cfg.token_cache_read}, write={ds_cfg.token_cache_write}, "
+            f"prime_train_tokens={ds_cfg.token_cache_prime_train_tokens}"
+        )
         if train_eval_same_split and holdout_fraction > 0.0:
             print(
                 "Dataset split isolation: "
@@ -2203,6 +2404,7 @@ def run(args: argparse.Namespace) -> None:
                     partition_mode=partition_mode,
                     eval_holdout_fraction=holdout_fraction,
                     partition_salt=seed_val + 907,
+                    cache_seed=seed_val,
                 )
 
             def build_eval(split_name: str, seed_val: int, partition_mode: str) -> jnp.ndarray:
@@ -2219,6 +2421,7 @@ def run(args: argparse.Namespace) -> None:
                     partition_mode=partition_mode,
                     eval_holdout_fraction=holdout_fraction,
                     partition_salt=args.seed + 907,
+                    cache_seed=args.seed + 29,
                 )
 
         else:
@@ -2234,6 +2437,7 @@ def run(args: argparse.Namespace) -> None:
                     partition_mode=partition_mode,
                     eval_holdout_fraction=holdout_fraction,
                     partition_salt=seed_val + 907,
+                    cache_seed=seed_val,
                 )
 
             def build_eval(split_name: str, seed_val: int, partition_mode: str) -> jnp.ndarray:
@@ -2249,6 +2453,7 @@ def run(args: argparse.Namespace) -> None:
                     partition_mode=partition_mode,
                     eval_holdout_fraction=holdout_fraction,
                     partition_salt=args.seed + 907,
+                    cache_seed=args.seed + 29,
                 )
 
         train_tokens = build_train(args.seed + 11, train_partition_mode)
@@ -2281,6 +2486,13 @@ def run(args: argparse.Namespace) -> None:
             f"unique={int(tok_stats.get('table_unique_external_ids', 0.0))}/"
             f"{int(tok_stats.get('table_capacity', 0.0))}"
         )
+
+    if args.prepare_data_only:
+        print(
+            "Data preparation complete: train/eval token pools ready. "
+            "Exiting before model init/JIT because --prepare-data-only was set."
+        )
+        return
 
     sampler_enabled = args.inference_sampler_interval > 0
     hellaswag_enabled = args.hellaswag_eval_interval > 0
@@ -3264,6 +3476,15 @@ def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     p.add_argument("--target-runtime-minutes", type=float, default=0.0)
     p.add_argument("--target-train-tokens", type=int, default=None)
     p.add_argument("--warmup-steps", type=int, default=6)
+    p.add_argument(
+        "--prepare-data-only",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help=(
+            "Build and cache train/eval token pools, then exit before model init/JIT. "
+            "Useful for Colab pre-staging to avoid repeated long data preamble."
+        ),
+    )
     p.add_argument("--token-pool-batches", type=int, default=256)
     p.add_argument(
         "--hardware-aware",
@@ -3384,6 +3605,30 @@ def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
         "--dataset-http-cache-write",
         action=argparse.BooleanOptionalAction,
         default=True,
+    )
+    p.add_argument(
+        "--dataset-token-cache-dir",
+        type=str,
+        default="artifacts/datasets/token_pool_cache",
+    )
+    p.add_argument(
+        "--dataset-token-cache-read",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
+    p.add_argument(
+        "--dataset-token-cache-write",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
+    p.add_argument(
+        "--dataset-token-cache-prime-train-tokens",
+        type=int,
+        default=0,
+        help=(
+            "When >0, training token pool cache is prefilled to at least this many tokens "
+            "so later runs can reuse cached pools with larger batch/seq settings."
+        ),
     )
     p.add_argument("--lr", type=float, default=1e-3)
     p.add_argument(
