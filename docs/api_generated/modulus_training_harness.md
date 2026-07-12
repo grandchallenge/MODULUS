@@ -23,9 +23,23 @@ A minimal TrainState for environments without flax.
 
 Default next-token prediction loss helper. Expects:   apply_fn(params, tokens) -> logits [B,T,V]   batch = (tokens, targets)
 
+### `make_eval_step`
+
+- Kind: `function`
+- Signature: `make_eval_step(*, apply_fn: 'Callable[[PyTree, jnp.ndarray], jnp.ndarray]', loss_fn: 'Callable[[Callable, PyTree, Any], Tuple[jnp.ndarray, Any]]' = <function default_loss_and_logits>) -> 'Callable[[Any, Any], Dict[str, jnp.ndarray]]'`
+
+Build a JIT-able eval_step(state, batch) -> metrics.
+
 ### `make_train_step`
 
 - Kind: `function`
 - Signature: `make_train_step(*, apply_fn: 'Callable[[PyTree, jnp.ndarray], jnp.ndarray]', loss_fn: 'Callable[[Callable, PyTree, Any], Tuple[jnp.ndarray, Any]]' = <function default_loss_and_logits>, use_lora_grad_hook: 'bool' = False, lora_hook_kwargs: 'Optional[Dict[str, Any]]' = None) -> 'Callable[[Any, Any], Tuple[Any, Dict[str, jnp.ndarray]]]'`
 
 Build a JIT-able train_step(state, batch) -> (new_state, metrics).
+
+### `run_train_loop`
+
+- Kind: `function`
+- Signature: `run_train_loop(*, state: 'Any', train_step_fn: 'Callable[[Any, Any], Tuple[Any, Dict[str, jnp.ndarray]]]', train_batches: 'Iterable[Any]', num_steps: 'int', eval_step_fn: 'Optional[Callable[[Any, Any], Dict[str, jnp.ndarray]]]' = None, eval_batches: 'Optional[Iterable[Any]]' = None, eval_interval: 'int' = 0) -> 'Tuple[Any, List[Dict[str, float]]]'`
+
+Run a simple Python training loop with optional periodic validation metrics.
