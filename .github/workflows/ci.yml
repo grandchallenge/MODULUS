@@ -34,7 +34,20 @@ jobs:
         run: python -m ruff check modulus scripts
 
       - name: API docs freshness
-        run: python scripts/generate_api_docs.py --check
+        id: api-docs
+        run: |
+          if ! python scripts/generate_api_docs.py --check; then
+            python scripts/generate_api_docs.py
+            exit 1
+          fi
+
+      - name: Upload expected API docs on freshness failure
+        if: failure() && steps.api-docs.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: expected-api-docs-py${{ matrix.python-version }}-${{ github.sha }}
+          path: docs/api_generated
+          if-no-files-found: error
 
       - name: Test
         run: python -m pytest
