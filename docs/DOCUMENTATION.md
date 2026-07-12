@@ -27,7 +27,15 @@ This is the entry point for technical, contextual, and operational documentation
 - [engineering/ENGINEERING_HANDOFF_GCT_2026-03-04.md](./engineering/ENGINEERING_HANDOFF_GCT_2026-03-04.md)
 - [engineering/LINT_PHASE_PLAN.md](./engineering/LINT_PHASE_PLAN.md)
 
-## 6) Compliance and Governance
+## 6) Standards and Adaptive Control
+
+- [standards/REGRET_CONTRACT_STANDARD.md](./standards/REGRET_CONTRACT_STANDARD.md)
+- [standards/ONLINE_CONTROL_ROLLOUT.md](./standards/ONLINE_CONTROL_ROLLOUT.md)
+- Machine schema: [../schemas/regret_contract.schema.json](../schemas/regret_contract.schema.json)
+- Contract template: [../templates/regret_contract.yaml](../templates/regret_contract.yaml)
+- Reference implementation: `modulus.online`
+
+## 7) Compliance and Governance
 
 - [ip/provenance.md](./ip/provenance.md)
 - [ip/ai_origin_evidence.md](./ip/ai_origin_evidence.md)
