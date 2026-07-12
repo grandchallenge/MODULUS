@@ -1,0 +1,21 @@
+{
+  "fixtures": {
+    "aether_sleeping_bandit": {
+      "cumulative_loss": 110.99999785423279,
+      "static_regret": 1.1999999284744263,
+      "tracking_regret_k1": 57.39999657869339
+    },
+    "kibo_optimistic_omd": {
+      "optimism_gain": 7.060242340434343,
+      "optimistic_linear_loss": -63.54394604708068,
+      "ordinary_linear_loss": -56.48370370664634
+    },
+    "spindle_dynamic_scheduler": {
+      "cumulative_loss": 25.461436107754707,
+      "maximum_interval_static_regret": 4.276704385876656,
+      "static_regret": -54.53856284916401,
+      "tracking_regret_k1": 5.4614358097314835
+    }
+  },
+  "schema_version": "1.0.0"
+}
