@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grandchallenge.ai/schemas/regret-contract-1.0.0.json",
+  "title": "GCL Regret Contract",
+  "description": "Auditable specification for an adaptive online controller.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "contract_id",
+    "controller",
+    "action_semantics",
+    "feedback",
+    "comparator",
+    "guarantee",
+    "geometry",
+    "loss",
+    "telemetry"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "contract_id": {"type": "string", "minLength": 1},
+    "controller": {"type": "string", "minLength": 1},
+    "action_semantics": {"type": "string", "minLength": 1},
+    "feedback": {
+      "enum": [
+        "full_information",
+        "bandit",
+        "delayed_full_information",
+        "delayed_bandit"
+      ]
+    },
+    "comparator": {
+      "enum": ["fixed", "path_length_bounded", "k_switch", "interval_fixed"]
+    },
+    "guarantee": {
+      "enum": ["static", "dynamic", "tracking", "strongly_adaptive"]
+    },
+    "geometry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action_space", "norm", "regularizer"],
+      "properties": {
+        "action_space": {
+          "enum": ["box", "simplex", "finite_experts", "manifold", "custom"]
+        },
+        "norm": {"type": "string", "minLength": 1},
+        "regularizer": {"type": "string", "minLength": 1},
+        "projection_or_retraction": {"type": ["string", "null"]}
+      }
+    },
+    "loss": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "lower_bound", "upper_bound", "convex_surrogate"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "lower_bound": {"type": "number"},
+        "upper_bound": {"type": "number"},
+        "components": {"type": "array", "items": {"type": "string"}},
+        "convex_surrogate": {"type": "boolean"}
+      }
+    },
+    "delayed_feedback_max_steps": {"type": ["integer", "null"], "minimum": 0},
+    "optimism_hint_source": {"type": ["string", "null"]},
+    "constraints": {"type": "object"},
+    "telemetry": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "contains": {"const": "cumulative_loss"},
+      "items": {"type": "string", "minLength": 1}
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "feedback": {"enum": ["delayed_full_information", "delayed_bandit"]}
+        }
+      },
+      "then": {"required": ["delayed_feedback_max_steps"]}
+    },
+    {
+      "if": {"properties": {"guarantee": {"const": "dynamic"}}},
+      "then": {
+        "properties": {
+          "comparator": {"enum": ["path_length_bounded", "k_switch"]}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"guarantee": {"const": "tracking"}}},
+      "then": {"properties": {"comparator": {"const": "k_switch"}}}
+    },
+    {
+      "if": {"properties": {"guarantee": {"const": "strongly_adaptive"}}},
+      "then": {"properties": {"comparator": {"const": "interval_fixed"}}}
+    }
+  ]
+}
