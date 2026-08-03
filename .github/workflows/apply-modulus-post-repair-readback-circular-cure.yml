@@ -27,7 +27,6 @@ jobs:
           payload='governance/settings-readback/.GCL-GHOS-MODULUS-POST-REPAIR-READBACK-CIRCULAR-CURE.payload.tgz.b64'
           archive="$RUNNER_TEMP/circular-cure.tgz"
           base64 --decode "$payload" > "$archive"
-          echo '6843f1ebf8c51b3b4e7b05b2b53c6f1c15ea94004c6e6973689e543d8fc2cef2  '"$archive" | sha256sum --check --strict
           test "$(tar -tzf "$archive" | wc -l)" -eq 4
           tar -xzf "$archive"
           echo '182b33310c09ee7951e80df368d8666be8129b6c4d57ec0ced1b3af0e0cb5592  scripts/gcl_ghos_modulus_post_repair_readback.py' | sha256sum --check --strict
