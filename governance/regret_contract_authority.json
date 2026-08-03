@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0.0",
+  "record_id": "MODULUS-GCL-RC-PIN-001",
+  "canonical_authority": {
+    "repository": "grandchallenge/gcl-standards",
+    "commit": "4bb7e09cbd8ddac521447cb1386bc501f9ac5b12",
+    "migration_merge": "afea7dd8e952998596fc54e215b6b1e2fcd48645",
+    "chronology_cure_merge": "4bb7e09cbd8ddac521447cb1386bc501f9ac5b12",
+    "standard": {
+      "path": "standards/GCL-RC-00.md",
+      "blob": "2978dee21e7b7ee942756b39ea49572919cf552d"
+    },
+    "schema": {
+      "path": "schemas/regret_contract.schema.json",
+      "blob": "7bf9ba77df36d1646f123c174b0116c1552bb4cd"
+    },
+    "template": {
+      "path": "templates/regret_contract.yaml",
+      "blob": "6d0f041248d520715061bf1af8b1d97e27da0a43"
+    },
+    "adoption_ledger": {
+      "path": "programme-adoption/REGRET-CONTRACT-1.0.0.yaml",
+      "blob": "926e213f122da621e6472ef5f5fcf9fad214fcd2"
+    },
+    "decision": {
+      "path": "decisions/ADR-0002_REGRET_CONTRACT_STANDARD.md",
+      "blob": "3f5eed25efe6a9b593cc07d4125b35955dc9903f"
+    }
+  },
+  "local_reference": {
+    "repository": "fyremael/MODULUS",
+    "source_pull_request": 1,
+    "source_head": "641ba766fe8eec613a01cd4726841b1d4e93ad78",
+    "implementation_package": "modulus.online",
+    "schema_copy": {
+      "path": "schemas/regret_contract.schema.json",
+      "expected_blob": "7bf9ba77df36d1646f123c174b0116c1552bb4cd"
+    },
+    "template_copy": {
+      "path": "templates/regret_contract.yaml",
+      "expected_blob": "6d0f041248d520715061bf1af8b1d97e27da0a43"
+    },
+    "fixture_report": "artifacts/regret_contract/reference_fixture_report.json"
+  },
+  "status": {
+    "standard_status": "candidate",
+    "modulus_conformant": false,
+    "implementation_status": "reference_candidate",
+    "programme_adoption_complete": false
+  },
+  "boundaries": {
+    "local_standard_is_normative": false,
+    "controller_optimality_claimed": false,
+    "neural_network_convergence_claimed": false,
+    "deployment_safety_claimed": false,
+    "product_or_commercial_claimed": false
+  }
+}

@@ -1,0 +1,38 @@
+schema_version: 1.0.0
+contract_id: kibo.groupwise-lr.v1
+controller: optimistic_euclidean_omd
+action_semantics: groupwise learning-rate multipliers
+feedback: full_information
+comparator: path_length_bounded
+guarantee: dynamic
+geometry:
+  action_space: box
+  norm: l2
+  regularizer: half_squared_l2
+  projection_or_retraction: clip_[0.25,4.0]
+loss:
+  name: progress_stability_surrogate
+  lower_bound: 0.0
+  upper_bound: 1.0
+  components:
+    - normalized_training_progress
+    - boundary_amplification_risk
+    - compute_cost
+  convex_surrogate: true
+delayed_feedback_max_steps: null
+optimism_hint_source: koopman_boundary_predictor
+constraints:
+  lr_multiplier_min: 0.25
+  lr_multiplier_max: 4.0
+  boundary_gain_max: 1.5
+telemetry:
+  - cumulative_loss
+  - action
+  - hint
+  - hint_error_dual_norm
+  - static_regret
+  - dynamic_regret
+  - comparator_path_length
+  - feedback_delay
+  - boundary_gain
+  - confidence_sequence
