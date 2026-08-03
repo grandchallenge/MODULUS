@@ -82,7 +82,8 @@
         "issue",
         "comment_id",
         "author",
-        "contains_placeholders",
+        "original_contains_placeholders",
+        "currently_explicitly_superseded",
         "human_steward_authorship_valid",
         "classification"
       ],
@@ -91,7 +92,8 @@
         "issue": {"const": 4},
         "comment_id": {"const": 5161244663},
         "author": {"const": "jimsteeg"},
-        "contains_placeholders": {"const": true},
+        "original_contains_placeholders": {"const": true},
+        "currently_explicitly_superseded": {"const": true},
         "human_steward_authorship_valid": {"const": false},
         "classification": {"const": "superseded_placeholder_attestation"}
       }
