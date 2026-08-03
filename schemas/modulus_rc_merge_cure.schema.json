@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grandchallenge.ai/schemas/modulus-rc-merge-cure-1.0.0.json",
+  "title": "MODULUS Regret Contract Merge Cure",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_version",
+    "record_id",
+    "state",
+    "subject",
+    "canonical_authority",
+    "pre_merge_evidence",
+    "invalid_closeout_comment",
+    "retrospective_ratification",
+    "independent_cure_review",
+    "preserved_boundaries"
+  ],
+  "properties": {
+    "$schema": {"const": "../schemas/modulus_rc_merge_cure.schema.json"},
+    "schema_version": {"const": "1.0.0"},
+    "record_id": {"const": "MODULUS-RC-MERGE-CURE-001"},
+    "state": {
+      "enum": [
+        "ratification_pending",
+        "ratified_pending_review",
+        "reviewed_pending_protected_merge",
+        "protected_complete"
+      ]
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "pull_request",
+        "reviewed_head",
+        "merge_commit",
+        "merged_at",
+        "pre_merge_non_author_approval_present",
+        "pre_merge_steward_release_present"
+      ],
+      "properties": {
+        "repository": {"const": "fyremael/MODULUS"},
+        "pull_request": {"const": 1},
+        "reviewed_head": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "merge_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "merged_at": {"type": "string", "format": "date-time"},
+        "pre_merge_non_author_approval_present": {"const": false},
+        "pre_merge_steward_release_present": {"const": false}
+      }
+    },
+    "canonical_authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "commit"],
+      "properties": {
+        "repository": {"const": "grandchallenge/gcl-standards"},
+        "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "pre_merge_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ci_run", "delegated_audit_review", "formal_reviews_observed"],
+      "properties": {
+        "ci_run": {"const": 30774910406},
+        "delegated_audit_review": {"const": 4840145007},
+        "formal_reviews_observed": {
+          "type": "array",
+          "items": {"type": "integer"},
+          "const": [4840145007]
+        }
+      }
+    },
+    "invalid_closeout_comment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "issue",
+        "comment_id",
+        "author",
+        "original_contains_placeholders",
+        "currently_explicitly_superseded",
+        "human_steward_authorship_valid",
+        "classification"
+      ],
+      "properties": {
+        "repository": {"const": "grandchallenge/.github"},
+        "issue": {"const": 4},
+        "comment_id": {"const": 5161244663},
+        "author": {"const": "jimsteeg"},
+        "original_contains_placeholders": {"const": true},
+        "currently_explicitly_superseded": {"const": true},
+        "human_steward_authorship_valid": {"const": false},
+        "classification": {"const": "superseded_placeholder_attestation"}
+      }
+    },
+    "retrospective_ratification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "comment_id", "author", "recorded_at"],
+      "properties": {
+        "required": {"const": true},
+        "comment_id": {"type": ["integer", "null"]},
+        "author": {"type": ["string", "null"]},
+        "recorded_at": {"type": ["string", "null"]}
+      }
+    },
+    "independent_cure_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "review_id", "reviewer", "submitted_at"],
+      "properties": {
+        "required": {"const": true},
+        "review_id": {"type": ["integer", "null"]},
+        "reviewer": {"type": ["string", "null"]},
+        "submitted_at": {"type": ["string", "null"]}
+      }
+    },
+    "preserved_boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "standard_status",
+        "modulus_conformant",
+        "implementation_status",
+        "programme_adoption_complete",
+        "revert_required",
+        "controller_optimality_claimed",
+        "deployment_safety_claimed",
+        "product_or_commercial_claimed"
+      ],
+      "properties": {
+        "standard_status": {"const": "candidate"},
+        "modulus_conformant": {"const": false},
+        "implementation_status": {"const": "reference_candidate"},
+        "programme_adoption_complete": {"const": false},
+        "revert_required": {"const": false},
+        "controller_optimality_claimed": {"const": false},
+        "deployment_safety_claimed": {"const": false},
+        "product_or_commercial_claimed": {"const": false}
+      }
+    }
+  }
+}

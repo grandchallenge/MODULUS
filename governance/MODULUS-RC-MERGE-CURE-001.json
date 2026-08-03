@@ -1,0 +1,56 @@
+{
+  "$schema": "../schemas/modulus_rc_merge_cure.schema.json",
+  "schema_version": "1.0.0",
+  "record_id": "MODULUS-RC-MERGE-CURE-001",
+  "state": "ratified_pending_review",
+  "subject": {
+    "repository": "fyremael/MODULUS",
+    "pull_request": 1,
+    "reviewed_head": "a78ed738d7d4b9de03d0212a54d8ec35fd15ce4d",
+    "merge_commit": "959829113cca27a4f14d42ab620b78c9a890f1bf",
+    "merged_at": "2026-08-03T00:56:42Z",
+    "pre_merge_non_author_approval_present": false,
+    "pre_merge_steward_release_present": false
+  },
+  "canonical_authority": {
+    "repository": "grandchallenge/gcl-standards",
+    "commit": "4bb7e09cbd8ddac521447cb1386bc501f9ac5b12"
+  },
+  "pre_merge_evidence": {
+    "ci_run": 30774910406,
+    "delegated_audit_review": 4840145007,
+    "formal_reviews_observed": [4840145007]
+  },
+  "invalid_closeout_comment": {
+    "repository": "grandchallenge/.github",
+    "issue": 4,
+    "comment_id": 5161244663,
+    "author": "jimsteeg",
+    "original_contains_placeholders": true,
+    "currently_explicitly_superseded": true,
+    "human_steward_authorship_valid": false,
+    "classification": "superseded_placeholder_attestation"
+  },
+  "retrospective_ratification": {
+    "required": true,
+    "comment_id": 5161330306,
+    "author": "fyremael",
+    "recorded_at": "2026-08-03T01:15:51Z"
+  },
+  "independent_cure_review": {
+    "required": true,
+    "review_id": null,
+    "reviewer": null,
+    "submitted_at": null
+  },
+  "preserved_boundaries": {
+    "standard_status": "candidate",
+    "modulus_conformant": false,
+    "implementation_status": "reference_candidate",
+    "programme_adoption_complete": false,
+    "revert_required": false,
+    "controller_optimality_claimed": false,
+    "deployment_safety_claimed": false,
+    "product_or_commercial_claimed": false
+  }
+}
