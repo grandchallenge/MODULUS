@@ -36,6 +36,7 @@ jobs:
           echo 'c3123ef6f10dc6e7a7964cd313310124834be4cd262dc6b8c61509f0d6e26d0b  scripts/gcl_ghos_modulus_post_repair_readback.py' | sha256sum --check --strict
           echo 'b41cee681bdde18c020f915bc9eadb0874c82eed0ae68ba1241f8dbc019ca3e0  governance/settings-readback/GCL-GHOS-MODULUS-POST-REPAIR-READBACK-001.schema.json' | sha256sum --check --strict
           echo '70321df8ae7a0cb0c2a5fdf2ffc8989aa9d4533902d1fdb614f29f5244e5417c  modulus/tests/test_gcl_ghos_modulus_post_repair_readback.py' | sha256sum --check --strict
+          python -m pip install --disable-pip-version-check --no-input pytest==8.3.5
           python -m pytest -q modulus/tests/test_gcl_ghos_modulus_post_repair_readback.py
 
       - name: Remove staging inputs and commit permanent package
