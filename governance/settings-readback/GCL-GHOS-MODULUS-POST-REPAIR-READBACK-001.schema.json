@@ -1,0 +1,257 @@
+{
+  "$defs": {
+    "endpoint": {
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "const": "GET"
+        },
+        "path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "payload": {},
+        "status": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "method",
+        "path",
+        "status",
+        "payload"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://grandchallenge.github.io/schemas/GCL-GHOS-MODULUS-POST-REPAIR-READBACK-001.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "const": "governance/settings-readback/GCL-GHOS-MODULUS-POST-REPAIR-READBACK-001.schema.json"
+    },
+    "actor": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "login": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "repository_admin": {
+          "const": true
+        }
+      },
+      "required": [
+        "login",
+        "id",
+        "repository_admin"
+      ],
+      "type": "object"
+    },
+    "api_version": {
+      "const": "2026-03-10"
+    },
+    "authority": {
+      "type": "object"
+    },
+    "claim_boundaries": {
+      "additionalProperties": false,
+      "properties": {
+        "certification_claims_authorized": {
+          "const": false
+        },
+        "commercial_claims_authorized": {
+          "const": false
+        },
+        "deployment_claims_authorized": {
+          "const": false
+        },
+        "mathematical_claims_authorized": {
+          "const": false
+        },
+        "modulus_deviation_disposition_authorized": {
+          "const": false
+        },
+        "novelty_claims_authorized": {
+          "const": false
+        },
+        "organization_wide_conformance": {
+          "const": false
+        }
+      },
+      "required": [
+        "organization_wide_conformance",
+        "modulus_deviation_disposition_authorized",
+        "mathematical_claims_authorized",
+        "certification_claims_authorized",
+        "novelty_claims_authorized",
+        "deployment_claims_authorized",
+        "commercial_claims_authorized"
+      ],
+      "type": "object"
+    },
+    "operation_id": {
+      "const": "GCL-GHOS-MODULUS-POST-REPAIR-READBACK-001"
+    },
+    "protected_main": {
+      "type": "object"
+    },
+    "protected_main_check_runs": {
+      "type": "object"
+    },
+    "recorded_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "repository": {
+      "const": "grandchallenge/MODULUS"
+    },
+    "repository_metadata": {
+      "$ref": "#/$defs/endpoint"
+    },
+    "repository_rulesets": {
+      "additionalProperties": false,
+      "properties": {
+        "details": {
+          "items": {
+            "$ref": "#/$defs/endpoint"
+          },
+          "type": "array"
+        },
+        "list": {
+          "$ref": "#/$defs/endpoint"
+        }
+      },
+      "required": [
+        "list",
+        "details"
+      ],
+      "type": "object"
+    },
+    "repository_settings": {
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "security_controls": {
+      "type": "object"
+    },
+    "surfaces": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "blob_sha": {
+            "pattern": "^[0-9a-f]{40}$",
+            "type": "string"
+          },
+          "content_utf8": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "path": {
+            "enum": [
+              ".github/CODEOWNERS",
+              ".github/dependabot.yml",
+              ".github/workflows/ci.yml",
+              ".github/workflows/gcl-conformance.yml",
+              "AGENTS.md",
+              "SUPPORT.md"
+            ]
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "size": {
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "path",
+          "blob_sha",
+          "sha256",
+          "size",
+          "content_utf8"
+        ],
+        "type": "object"
+      },
+      "maxItems": 6,
+      "minItems": 6,
+      "type": "array"
+    },
+    "validation": {
+      "additionalProperties": false,
+      "properties": {
+        "modulus_deviation_disposition_authorized": {
+          "const": false
+        },
+        "organization_wide_conformance": {
+          "const": false
+        },
+        "required_checks_successful": {
+          "const": true
+        },
+        "required_surfaces_present": {
+          "const": true
+        },
+        "required_workflows_active": {
+          "const": true
+        },
+        "rulesets_match_authorized_target": {
+          "const": true
+        },
+        "security_controls_match_authorized_target": {
+          "const": true
+        },
+        "settings_match_authorized_target": {
+          "const": true
+        }
+      },
+      "required": [
+        "settings_match_authorized_target",
+        "rulesets_match_authorized_target",
+        "security_controls_match_authorized_target",
+        "required_workflows_active",
+        "required_checks_successful",
+        "required_surfaces_present",
+        "modulus_deviation_disposition_authorized",
+        "organization_wide_conformance"
+      ],
+      "type": "object"
+    },
+    "workflow_inventory": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "$schema",
+    "schema_version",
+    "operation_id",
+    "recorded_at",
+    "api_version",
+    "repository",
+    "authority",
+    "actor",
+    "protected_main",
+    "repository_metadata",
+    "repository_rulesets",
+    "repository_settings",
+    "security_controls",
+    "workflow_inventory",
+    "protected_main_check_runs",
+    "surfaces",
+    "validation",
+    "claim_boundaries"
+  ],
+  "title": "GCL-GHOS-MODULUS-POST-REPAIR-READBACK-001",
+  "type": "object"
+}
