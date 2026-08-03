@@ -16,8 +16,12 @@ EXPECTED_AUTHORITY = {
     "chronology_cure_merge": "4bb7e09cbd8ddac521447cb1386bc501f9ac5b12",
 }
 EXPECTED_LOCAL_BLOBS = {
-    "schemas/regret_contract.schema.json": "7bf9ba77df36d1646f123c174b0116c1552bb4cd",
-    "templates/regret_contract.yaml": "6d0f041248d520715061bf1af8b1d97e27da0a43",
+    "schemas/regret_contract.schema.json": (
+        "7bf9ba77df36d1646f123c174b0116c1552bb4cd"
+    ),
+    "templates/regret_contract.yaml": (
+        "6d0f041248d520715061bf1af8b1d97e27da0a43"
+    ),
 }
 
 
@@ -49,11 +53,26 @@ def validate() -> None:
             raise ValueError(f"canonical authority drift: {key}")
 
     expected_artifacts = {
-        "standard": ("standards/GCL-RC-00.md", "2978dee21e7b7ee942756b39ea49572919cf552d"),
-        "schema": ("schemas/regret_contract.schema.json", "7bf9ba77df36d1646f123c174b0116c1552bb4cd"),
-        "template": ("templates/regret_contract.yaml", "6d0f041248d520715061bf1af8b1d97e27da0a43"),
-        "adoption_ledger": ("programme-adoption/REGRET-CONTRACT-1.0.0.yaml", "926e213f122da621e6472ef5f5fcf9fad214fcd2"),
-        "decision": ("decisions/ADR-0002_REGRET_CONTRACT_STANDARD.md", "3f5eed25efe6a9b593cc07d4125b35955dc9903f"),
+        "standard": (
+            "standards/GCL-RC-00.md",
+            "2978dee21e7b7ee942756b39ea49572919cf552d",
+        ),
+        "schema": (
+            "schemas/regret_contract.schema.json",
+            "7bf9ba77df36d1646f123c174b0116c1552bb4cd",
+        ),
+        "template": (
+            "templates/regret_contract.yaml",
+            "6d0f041248d520715061bf1af8b1d97e27da0a43",
+        ),
+        "adoption_ledger": (
+            "programme-adoption/REGRET-CONTRACT-1.0.0.yaml",
+            "926e213f122da621e6472ef5f5fcf9fad214fcd2",
+        ),
+        "decision": (
+            "decisions/ADR-0002_REGRET_CONTRACT_STANDARD.md",
+            "3f5eed25efe6a9b593cc07d4125b35955dc9903f",
+        ),
     }
     for name, (path, blob) in expected_artifacts.items():
         artifact = authority.get(name)
