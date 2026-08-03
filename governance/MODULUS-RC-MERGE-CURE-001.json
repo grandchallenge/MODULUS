@@ -2,7 +2,7 @@
   "$schema": "../schemas/modulus_rc_merge_cure.schema.json",
   "schema_version": "1.0.0",
   "record_id": "MODULUS-RC-MERGE-CURE-001",
-  "state": "ratification_pending",
+  "state": "ratified_pending_review",
   "subject": {
     "repository": "fyremael/MODULUS",
     "pull_request": 1,
@@ -26,15 +26,16 @@
     "issue": 4,
     "comment_id": 5161244663,
     "author": "jimsteeg",
-    "contains_placeholders": true,
+    "original_contains_placeholders": true,
+    "currently_explicitly_superseded": true,
     "human_steward_authorship_valid": false,
     "classification": "superseded_placeholder_attestation"
   },
   "retrospective_ratification": {
     "required": true,
-    "comment_id": null,
-    "author": null,
-    "recorded_at": null
+    "comment_id": 5161330306,
+    "author": "fyremael",
+    "recorded_at": "2026-08-03T01:15:51Z"
   },
   "independent_cure_review": {
     "required": true,
