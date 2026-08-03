@@ -1,5 +1,16 @@
 # GCL Online-Control Rollout
 
+## Authority
+
+Canonical standard custody belongs to `grandchallenge/gcl-standards` at commit
+`4bb7e09cbd8ddac521447cb1386bc501f9ac5b12`. MODULUS owns only the retained
+`modulus.online` reference implementation, deterministic fixtures, and local
+vendored schema/template copies whose blobs must remain equal to the canonical
+copies.
+
+The machine-readable authority pin is
+`governance/regret_contract_authority.json`.
+
 ## Objective
 
 Operationalize the Regret Contract Standard without destabilizing existing
@@ -11,10 +22,14 @@ AETHER execution semantics is explicitly out of scope.
 
 ### WP-RC-01 — Canonical standard and reference library
 
-Owner: MODULUS  
-Artifacts: schema, template, contract dataclasses, OMD/Hedge/Exp3 primitives,
-regret telemetry, tests, deterministic fixture runner.  
-Exit: CI green and fixture JSON retained as an artifact.
+Canonical owner: `grandchallenge/gcl-standards`  
+Reference implementation owner: MODULUS  
+Canonical artifacts: standard, schema, template, adoption ledger, governing
+ADR.  
+MODULUS artifacts: contract dataclasses, OMD/Hedge/Exp3 primitives, regret
+telemetry, tests, deterministic fixture runner, exact vendored schema/template.  
+Exit: canonical authority pin validates, MODULUS CI is green, and fixture JSON
+is retained as an artifact.
 
 ### WP-RC-02 — KIBO optimistic governor
 
@@ -63,7 +78,8 @@ the existing CA-AdamW/TEMA-AdamW specification.
 
 Every work package reports:
 
-- contract identifier and schema version;
+- canonical standard commit and contract identifier;
+- schema version and exact schema blob;
 - base system and fallback;
 - action dimension and update frequency;
 - feedback type and delay distribution;
@@ -80,3 +96,7 @@ A controller progresses from fixture to optional experiment flag only after it
 beats or matches the stable base on end-task utility and stability within the
 declared compute budget. It becomes a default only after a second modality or
 workload reproduces the benefit. Novelty is not a promotion criterion.
+
+No programme is conformant merely because it imports `modulus.online` or uses a
+vendored schema copy. Conformance remains a separately adjudicated programme
+claim under the canonical standard.
