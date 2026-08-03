@@ -1,6 +1,6 @@
 # MODULUS-RC-MERGE-CURE-001
 
-**State:** Retrospective ratification pending  
+**State:** Retrospectively ratified; independent cure review pending  
 **Tracker:** MODULUS issue #4  
 **Subject:** MODULUS PR #1  
 **Reviewed head:** `a78ed738d7d4b9de03d0212a54d8ec35fd15ce4d`  
@@ -21,49 +21,53 @@ At merge time, the PR record contained neither:
 
 The required protected sequence was therefore not satisfied.
 
-## Invalid navigation-mirror comment
+## Superseded navigation-mirror draft
 
-`grandchallenge/.github#4` comment `5161244663` was posted by `jimsteeg` after
-merge. It contains the literal placeholders:
+The original version of `grandchallenge/.github#4` comment `5161244663` was
+posted by `jimsteeg` after merge. It contained unresolved placeholders and used
+first-person Human Steward language. It could not serve as an attestation,
+approval, ratification, or release.
 
-- `[MODULUS_MERGE_COMMIT_SHA]`;
-- `[MERGED_AT_UTC]`;
-- `[NON_AUTHOR_REVIEW_ID]`;
-- `[REVIEWER_LOGIN]`;
-- `[HUMAN_STEWARD_RELEASE_COMMENT_ID]`.
+The comment is now explicitly marked `SUPERSEDED PLACEHOLDER DRAFT — NOT AN
+ATTESTATION`. Its original defect remains part of this cure record; its current
+text prevents accidental reliance.
 
-It also uses first-person Human Steward language despite being authored by
-`jimsteeg`. The comment is preserved as a superseded placeholder draft. It is
-not an attestation, approval, ratification, or release identity.
+## Retrospective ratification
+
+Human Steward comment `5161330306`, recorded by `fyremael` at
+`2026-08-03T01:15:51Z`, explicitly acknowledges that merge preceded both the
+required independent approval and exact-head Human Steward release.
+
+The comment retrospectively ratifies the exact merged packet solely within its
+bounded reference-implementation and canonical-authority-repin scope. It also
+authorizes this documentary cure while preserving all candidate and
+non-conformance boundaries.
 
 ## Preserved evidence
 
-The content packet itself remains exactly identified:
+The content packet remains exactly identified:
 
 - reviewed head `a78ed738d7d4b9de03d0212a54d8ec35fd15ce4d`;
 - merge `959829113cca27a4f14d42ab620b78c9a890f1bf`;
 - exact-head CI run `30774910406`;
 - delegated audit review `4840145007`;
+- retrospective ratification comment `5161330306`;
 - canonical authority
   `grandchallenge/gcl-standards@4bb7e09cbd8ddac521447cb1386bc501f9ac5b12`.
 
 No content revert is presently required. The defect concerns authorization,
 independent review, and documentary integrity.
 
-## Cure gate
+## Remaining cure gate
 
 The cure may advance only after:
 
-1. a Human Steward comment on MODULUS PR #1 explicitly acknowledges that merge
-   preceded both required gates and retrospectively ratifies the exact merged
+1. exact-head CI passes after binding comment `5161330306`;
+2. a fresh non-author approval reviews both this cure and the already-merged
    packet;
-2. that immutable comment identity is bound into the machine-readable cure
-   record;
-3. exact-head CI passes after the binding update;
-4. a fresh non-author approval reviews the cure and the merged packet;
-5. a pre-merge Human Steward release names the corrective PR exact head;
-6. the corrective PR merges by expected head; and
-7. a corrected, placeholder-free post-merge attestation is recorded on
+3. a pre-merge Human Steward release names the corrective PR exact head;
+4. the corrective PR merges by expected head; and
+5. a corrected, placeholder-free post-merge attestation is recorded on
    `grandchallenge/.github#4` before closure.
 
 ## Boundary
