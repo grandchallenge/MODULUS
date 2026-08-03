@@ -101,6 +101,28 @@
       "const": "GCL-GHOS-MODULUS-POST-REPAIR-READBACK-001"
     },
     "protected_main": {
+      "additionalProperties": false,
+      "properties": {
+        "authority_baseline_compare": {
+          "$ref": "#/$defs/endpoint"
+        },
+        "end_ref": {
+          "$ref": "#/$defs/endpoint"
+        },
+        "expected_sha": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        },
+        "start_ref": {
+          "$ref": "#/$defs/endpoint"
+        }
+      },
+      "required": [
+        "expected_sha",
+        "authority_baseline_compare",
+        "start_ref",
+        "end_ref"
+      ],
       "type": "object"
     },
     "protected_main_check_runs": {
@@ -139,7 +161,7 @@
       "type": "object"
     },
     "schema_version": {
-      "const": "1.0.0"
+      "const": "1.1.0"
     },
     "security_controls": {
       "type": "object"

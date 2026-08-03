@@ -34,8 +34,8 @@ SCHEMA_PATH = (
     "governance/settings-readback/"
     "GCL-GHOS-MODULUS-POST-REPAIR-READBACK-001.schema.json"
 )
-SCHEMA_VERSION = "1.0.0"
-DEFAULT_EXPECTED_MAIN = "f54dd2c0b26ea46ef6b598f6a65dfcef2c47da47"
+SCHEMA_VERSION = "1.1.0"
+OWNER_CONTROLS_EVIDENCE_MERGE = "f54dd2c0b26ea46ef6b598f6a65dfcef2c47da47"
 
 AUTHORITY = {
     "parent_issue": "grandchallenge/MODULUS#13",
@@ -44,7 +44,7 @@ AUTHORITY = {
     "campaign_issue": "grandchallenge/gcl-standards#22",
     "profile_merge": "c027ceafe1a2226ce8abeec36c739aeaa45ec784",
     "surfaces_merge": "7f9efc5a818655454e6117baa596e8382221a874",
-    "owner_controls_evidence_merge": DEFAULT_EXPECTED_MAIN,
+    "owner_controls_evidence_merge": OWNER_CONTROLS_EVIDENCE_MERGE,
     "main_ruleset_id": 20266757,
     "tag_ruleset_id": 20334249,
 }
@@ -488,6 +488,12 @@ def collect_readback(
             f"protected main moved: expected {expected_main}, observed {main_sha}"
         )
 
+    baseline_compare = request(
+        f"/repos/{REPOSITORY}/compare/"
+        f"{OWNER_CONTROLS_EVIDENCE_MERGE}...{expected_main}",
+        {200},
+    )
+
     surfaces = collect_surfaces(request, main_sha)
     workflows = collect_workflows(request)
     check_runs = collect_check_runs(
@@ -512,6 +518,7 @@ def collect_readback(
         },
         "protected_main": {
             "expected_sha": expected_main,
+            "authority_baseline_compare": baseline_compare,
             "start_ref": start_ref,
         },
         "repository_metadata": metadata,
@@ -620,14 +627,49 @@ def validate_readback(value: dict[str, Any]) -> None:
         raise ReadbackError("actor login is missing")
 
     protected_main = require_object(value.get("protected_main"), "protected main")
-    if protected_main.get("expected_sha") != DEFAULT_EXPECTED_MAIN:
-        raise ReadbackError("protected main expected identity drift")
+    expected_main = protected_main.get("expected_sha")
+    if not isinstance(expected_main, str) or not re.fullmatch(r"[0-9a-f]{40}", expected_main):
+        raise ReadbackError("protected main expected identity is invalid")
     for key in ("start_ref", "end_ref"):
         payload = endpoint_payload(protected_main.get(key), key, 200)
         payload = require_object(payload, key)
         obj = require_object(payload.get("object"), f"{key} object")
-        if obj.get("sha") != DEFAULT_EXPECTED_MAIN:
+        if obj.get("sha") != expected_main:
             raise ReadbackError(f"{key} protected main identity drift")
+
+    compare = endpoint_payload(
+        protected_main.get("authority_baseline_compare"),
+        "authority baseline compare",
+        200,
+    )
+    compare = require_object(compare, "authority baseline compare payload")
+    expected_compare_path = (
+        f"/repos/{REPOSITORY}/compare/"
+        f"{OWNER_CONTROLS_EVIDENCE_MERGE}...{expected_main}"
+    )
+    compare_endpoint = require_object(
+        protected_main.get("authority_baseline_compare"),
+        "authority baseline compare endpoint",
+    )
+    if compare_endpoint.get("path") != expected_compare_path:
+        raise ReadbackError("authority baseline compare path mismatch")
+    if compare.get("status") not in {"ahead", "identical"}:
+        raise ReadbackError("protected main does not descend from admitted evidence merge")
+    if compare.get("behind_by") != 0:
+        raise ReadbackError("protected main is behind the admitted evidence merge")
+    ahead_by = compare.get("ahead_by")
+    if not isinstance(ahead_by, int) or ahead_by < 0:
+        raise ReadbackError("authority baseline compare ahead count is invalid")
+    base_commit = require_object(compare.get("base_commit"), "compare base commit")
+    merge_base = require_object(compare.get("merge_base_commit"), "compare merge base")
+    if base_commit.get("sha") != OWNER_CONTROLS_EVIDENCE_MERGE:
+        raise ReadbackError("authority baseline compare base identity drift")
+    if merge_base.get("sha") != OWNER_CONTROLS_EVIDENCE_MERGE:
+        raise ReadbackError("authority baseline compare merge-base drift")
+    if compare.get("status") == "identical" and expected_main != OWNER_CONTROLS_EVIDENCE_MERGE:
+        raise ReadbackError("identical compare does not bind the expected main")
+    if compare.get("status") == "ahead" and expected_main == OWNER_CONTROLS_EVIDENCE_MERGE:
+        raise ReadbackError("ahead compare cannot bind the baseline itself")
 
     metadata = endpoint_payload(
         value.get("repository_metadata"), "repository metadata", 200
@@ -726,7 +768,7 @@ def validate_readback(value: dict[str, Any]) -> None:
         if isinstance(row, dict)
         and row.get("status") == "completed"
         and row.get("conclusion") == "success"
-        and row.get("head_sha") == DEFAULT_EXPECTED_MAIN
+        and row.get("head_sha") == expected_main
     }
     if successful != set(REQUIRED_CONTEXTS):
         raise ReadbackError("required check contexts are incomplete or unsuccessful")
@@ -807,8 +849,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--validate", type=Path)
     parser.add_argument(
         "--expected-main",
-        default=DEFAULT_EXPECTED_MAIN,
-        help="exact protected main SHA to bind",
+        help="exact protected main SHA to bind (required when collecting)",
     )
     parser.add_argument("--check-attempts", type=int, default=30)
     parser.add_argument("--check-interval-seconds", type=float, default=5.0)
@@ -841,12 +882,11 @@ def main(argv: list[str] | None = None) -> int:
             )
             return 0
 
-        if not re.fullmatch(r"[0-9a-f]{40}", args.expected_main):
-            raise ReadbackError("--expected-main must be a 40-character lowercase SHA")
-        if args.expected_main != DEFAULT_EXPECTED_MAIN:
+        if not isinstance(args.expected_main, str) or not re.fullmatch(
+            r"[0-9a-f]{40}", args.expected_main
+        ):
             raise ReadbackError(
-                "this collector version is closed over protected evidence merge "
-                f"{DEFAULT_EXPECTED_MAIN}"
+                "--expected-main is required and must be a 40-character lowercase SHA"
             )
         if args.check_attempts < 1:
             raise ReadbackError("--check-attempts must be positive")

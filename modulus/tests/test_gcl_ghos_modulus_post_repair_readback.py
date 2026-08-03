@@ -33,8 +33,11 @@ def surface(path, content):
     }
 
 
+EXPECTED_MAIN = "b" * 40
+
+
 def valid_value():
-    main = M.DEFAULT_EXPECTED_MAIN
+    main = EXPECTED_MAIN
     main_rule = M.main_ruleset_expected()
     tag_rule = M.tag_ruleset_expected()
     list_payload = [
@@ -108,6 +111,17 @@ def valid_value():
         "actor": {"login": "fyremael", "id": 17925951, "repository_admin": True},
         "protected_main": {
             "expected_sha": main,
+            "authority_baseline_compare": endpoint(
+                f"/repos/{M.REPOSITORY}/compare/"
+                f"{M.OWNER_CONTROLS_EVIDENCE_MERGE}...{main}",
+                {
+                    "status": "ahead",
+                    "ahead_by": 2,
+                    "behind_by": 0,
+                    "base_commit": {"sha": M.OWNER_CONTROLS_EVIDENCE_MERGE},
+                    "merge_base_commit": {"sha": M.OWNER_CONTROLS_EVIDENCE_MERGE},
+                },
+            ),
             "start_ref": endpoint("/ref", ref_payload),
             "end_ref": endpoint("/ref", ref_payload),
         },
@@ -201,6 +215,14 @@ def test_rejects_protected_main_drift():
         lambda value: value["protected_main"]["end_ref"]["payload"]["object"].update(
             {"sha": "0" * 40}
         )
+    )
+
+
+def test_rejects_authority_baseline_compare_drift():
+    reject(
+        lambda value: value["protected_main"]["authority_baseline_compare"][
+            "payload"
+        ]["merge_base_commit"].update({"sha": "0" * 40})
     )
 
 
