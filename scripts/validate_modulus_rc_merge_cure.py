@@ -32,9 +32,22 @@ EXPECTED_INVALID_COMMENT = {
     "issue": 4,
     "comment_id": 5161244663,
     "author": "jimsteeg",
-    "contains_placeholders": True,
+    "original_contains_placeholders": True,
+    "currently_explicitly_superseded": True,
     "human_steward_authorship_valid": False,
     "classification": "superseded_placeholder_attestation",
+}
+EXPECTED_RATIFICATION = {
+    "required": True,
+    "comment_id": 5161330306,
+    "author": "fyremael",
+    "recorded_at": "2026-08-03T01:15:51Z",
+}
+PENDING_REVIEW = {
+    "required": True,
+    "review_id": None,
+    "reviewer": None,
+    "submitted_at": None,
 }
 EXPECTED_BOUNDARIES = {
     "standard_status": "candidate",
@@ -69,7 +82,7 @@ def validate_schema(schema: dict[str, object]) -> None:
         raise ValueError("merge-cure schema must require its schema pointer")
 
 
-def validate_pending_fields(record: dict[str, object]) -> None:
+def validate_state_fields(record: dict[str, object]) -> None:
     ratification = record.get("retrospective_ratification")
     if not isinstance(ratification, dict):
         raise ValueError("retrospective_ratification must be an object")
@@ -79,26 +92,34 @@ def validate_pending_fields(record: dict[str, object]) -> None:
 
     state = record.get("state")
     if state == "ratification_pending":
-        if ratification != {
+        expected_pending_ratification = {
             "required": True,
             "comment_id": None,
             "author": None,
             "recorded_at": None,
-        }:
+        }
+        if ratification != expected_pending_ratification:
             raise ValueError("pending cure may not bind a ratification identity")
-        if review != {
-            "required": True,
-            "review_id": None,
-            "reviewer": None,
-            "submitted_at": None,
-        }:
+        if review != PENDING_REVIEW:
             raise ValueError("pending cure may not bind an independent review")
         return
 
-    if ratification.get("comment_id") in (None, 5161244663):
-        raise ValueError("advanced cure requires a distinct ratification comment")
-    if ratification.get("author") != "fyremael":
-        raise ValueError("ratification must be Human Steward-authored")
+    if ratification != EXPECTED_RATIFICATION:
+        raise ValueError("retrospective ratification identity drift")
+    if ratification["comment_id"] == EXPECTED_INVALID_COMMENT["comment_id"]:
+        raise ValueError("superseded placeholder comment cannot be ratification")
+
+    if state == "ratified_pending_review":
+        if review != PENDING_REVIEW:
+            raise ValueError("ratified pending-review state may not bind review")
+        return
+
+    if review.get("review_id") is None:
+        raise ValueError("advanced cure requires an independent review identity")
+    if review.get("reviewer") in (None, "fyremael"):
+        raise ValueError("advanced cure requires a non-author reviewer")
+    if review.get("submitted_at") is None:
+        raise ValueError("advanced cure requires review submission time")
 
 
 def validate_record(record: dict[str, object]) -> None:
@@ -126,7 +147,7 @@ def validate_record(record: dict[str, object]) -> None:
     if record.get("preserved_boundaries") != EXPECTED_BOUNDARIES:
         raise ValueError("merge-cure boundary drift")
 
-    validate_pending_fields(record)
+    validate_state_fields(record)
 
     document = DOCUMENT_PATH.read_text(encoding="utf-8")
     for required in (
@@ -134,7 +155,9 @@ def validate_record(record: dict[str, object]) -> None:
         "an independently attributable `APPROVED` review",
         "a Human Steward release naming exact head",
         "comment `5161244663`",
-        "superseded placeholder draft",
+        "SUPERSEDED PLACEHOLDER DRAFT",
+        "comment `5161330306`",
+        "retrospectively ratifies the exact merged packet",
         "No content revert is presently required",
         "`GCL-RC-00` remains candidate",
     ):
