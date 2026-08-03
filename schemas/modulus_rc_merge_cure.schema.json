@@ -5,6 +5,7 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
+    "$schema",
     "schema_version",
     "record_id",
     "state",
@@ -17,6 +18,7 @@
     "preserved_boundaries"
   ],
   "properties": {
+    "$schema": {"const": "../schemas/modulus_rc_merge_cure.schema.json"},
     "schema_version": {"const": "1.0.0"},
     "record_id": {"const": "MODULUS-RC-MERGE-CURE-001"},
     "state": {
