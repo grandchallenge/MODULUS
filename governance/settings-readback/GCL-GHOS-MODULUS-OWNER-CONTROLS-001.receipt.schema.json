@@ -1,0 +1,407 @@
+{
+  "$defs": {
+    "configure_codeql": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/response"
+        }
+      ],
+      "properties": {
+        "method": {
+          "const": "PATCH"
+        },
+        "path": {
+          "const": "/repos/grandchallenge/MODULUS/code-scanning/default-setup"
+        },
+        "status": {
+          "const": 202
+        }
+      }
+    },
+    "create_tag_ruleset": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/response"
+        }
+      ],
+      "properties": {
+        "method": {
+          "const": "POST"
+        },
+        "path": {
+          "const": "/repos/grandchallenge/MODULUS/rulesets"
+        },
+        "status": {
+          "const": 201
+        }
+      }
+    },
+    "enable_automated_fixes": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/response"
+        }
+      ],
+      "properties": {
+        "method": {
+          "const": "PUT"
+        },
+        "path": {
+          "const": "/repos/grandchallenge/MODULUS/automated-security-fixes"
+        },
+        "status": {
+          "const": 204
+        }
+      }
+    },
+    "enable_private_reporting": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/response"
+        }
+      ],
+      "properties": {
+        "method": {
+          "const": "PUT"
+        },
+        "path": {
+          "const": "/repos/grandchallenge/MODULUS/private-vulnerability-reporting"
+        },
+        "status": {
+          "const": 204
+        }
+      }
+    },
+    "enable_vulnerability_alerts": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/response"
+        }
+      ],
+      "properties": {
+        "method": {
+          "const": "PUT"
+        },
+        "path": {
+          "const": "/repos/grandchallenge/MODULUS/vulnerability-alerts"
+        },
+        "status": {
+          "const": 204
+        }
+      }
+    },
+    "patch_repository": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/response"
+        }
+      ],
+      "properties": {
+        "method": {
+          "const": "PATCH"
+        },
+        "path": {
+          "const": "/repos/grandchallenge/MODULUS"
+        },
+        "status": {
+          "const": 200
+        }
+      }
+    },
+    "response": {
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "payload": {},
+        "status": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "method",
+        "path",
+        "payload",
+        "status"
+      ],
+      "type": "object"
+    },
+    "update_main_ruleset": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/response"
+        }
+      ],
+      "properties": {
+        "method": {
+          "const": "PUT"
+        },
+        "path": {
+          "const": "/repos/grandchallenge/MODULUS/rulesets/20266757"
+        },
+        "status": {
+          "const": 200
+        }
+      }
+    }
+  },
+  "$id": "https://grandchallenge.ai/schemas/GCL-GHOS-MODULUS-OWNER-CONTROLS-001.receipt.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "actor": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "const": 17925951
+        },
+        "login": {
+          "const": "fyremael"
+        },
+        "repository_admin": {
+          "const": true
+        }
+      },
+      "required": [
+        "id",
+        "login",
+        "repository_admin"
+      ],
+      "type": "object"
+    },
+    "api_version": {
+      "const": "2026-03-10"
+    },
+    "authority": {
+      "additionalProperties": false,
+      "properties": {
+        "campaign_issue": {
+          "const": "grandchallenge/gcl-standards#22"
+        },
+        "main_ruleset_id": {
+          "const": 20266757
+        },
+        "parent_issue": {
+          "const": "grandchallenge/MODULUS#10"
+        },
+        "profile_merge": {
+          "const": "c027ceafe1a2226ce8abeec36c739aeaa45ec784"
+        },
+        "remediation_issue": {
+          "const": "grandchallenge/MODULUS#6"
+        },
+        "surfaces_merge": {
+          "const": "7f9efc5a818655454e6117baa596e8382221a874"
+        }
+      },
+      "required": [
+        "campaign_issue",
+        "main_ruleset_id",
+        "parent_issue",
+        "profile_merge",
+        "remediation_issue",
+        "surfaces_merge"
+      ],
+      "type": "object"
+    },
+    "claim_boundaries": {
+      "additionalProperties": false,
+      "properties": {
+        "certification_claims_authorized": {
+          "const": false
+        },
+        "commercial_claims_authorized": {
+          "const": false
+        },
+        "deployment_claims_authorized": {
+          "const": false
+        },
+        "mathematical_claims_authorized": {
+          "const": false
+        },
+        "novelty_claims_authorized": {
+          "const": false
+        },
+        "organization_wide_conformance": {
+          "const": false
+        }
+      },
+      "required": [
+        "certification_claims_authorized",
+        "commercial_claims_authorized",
+        "deployment_claims_authorized",
+        "mathematical_claims_authorized",
+        "novelty_claims_authorized",
+        "organization_wide_conformance"
+      ],
+      "type": "object"
+    },
+    "completed_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "mutations": {
+      "items": false,
+      "maxItems": 7,
+      "minItems": 7,
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/patch_repository"
+        },
+        {
+          "$ref": "#/$defs/update_main_ruleset"
+        },
+        {
+          "$ref": "#/$defs/create_tag_ruleset"
+        },
+        {
+          "$ref": "#/$defs/enable_vulnerability_alerts"
+        },
+        {
+          "$ref": "#/$defs/enable_automated_fixes"
+        },
+        {
+          "$ref": "#/$defs/enable_private_reporting"
+        },
+        {
+          "$ref": "#/$defs/configure_codeql"
+        }
+      ],
+      "type": "array"
+    },
+    "operation_id": {
+      "const": "GCL-GHOS-MODULUS-OWNER-CONTROLS-001"
+    },
+    "post_state": {
+      "additionalProperties": false,
+      "properties": {
+        "automated_security_fixes": {
+          "type": "object"
+        },
+        "codeql_default_setup": {
+          "type": "object"
+        },
+        "immutable_release_tag_ruleset": {
+          "type": "object"
+        },
+        "main_ruleset": {
+          "type": "object"
+        },
+        "private_vulnerability_reporting": {
+          "type": "object"
+        },
+        "repository": {
+          "type": "object"
+        },
+        "rulesets": {
+          "type": "object"
+        },
+        "vulnerability_alerts": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "automated_security_fixes",
+        "codeql_default_setup",
+        "immutable_release_tag_ruleset",
+        "main_ruleset",
+        "private_vulnerability_reporting",
+        "repository",
+        "rulesets",
+        "vulnerability_alerts"
+      ],
+      "type": "object"
+    },
+    "pre_state": {
+      "type": "object"
+    },
+    "repository": {
+      "const": "grandchallenge/MODULUS"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "started_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "tag_ruleset": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "created"
+        },
+        "id": {
+          "const": 20334249
+        }
+      },
+      "required": [
+        "action",
+        "id"
+      ],
+      "type": "object"
+    },
+    "validation": {
+      "additionalProperties": false,
+      "properties": {
+        "codeql_default_setup": {
+          "const": true
+        },
+        "dependabot_security_updates": {
+          "const": true
+        },
+        "immutable_release_tags": {
+          "const": true
+        },
+        "main_ruleset": {
+          "const": true
+        },
+        "organization_wide_conformance": {
+          "const": false
+        },
+        "private_vulnerability_reporting": {
+          "const": true
+        },
+        "repository_merge_settings": {
+          "const": true
+        },
+        "vulnerability_alerts": {
+          "const": true
+        }
+      },
+      "required": [
+        "codeql_default_setup",
+        "dependabot_security_updates",
+        "immutable_release_tags",
+        "main_ruleset",
+        "organization_wide_conformance",
+        "private_vulnerability_reporting",
+        "repository_merge_settings",
+        "vulnerability_alerts"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "operation_id",
+    "repository",
+    "api_version",
+    "started_at",
+    "completed_at",
+    "actor",
+    "authority",
+    "pre_state",
+    "mutations",
+    "tag_ruleset",
+    "post_state",
+    "validation",
+    "claim_boundaries"
+  ],
+  "title": "GCL-GHOS-MODULUS-OWNER-CONTROLS-001 execution receipt",
+  "type": "object"
+}
