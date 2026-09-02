@@ -1,0 +1,97 @@
+name: GH-OS routing enforcement
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ghos-routing-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  routing-enforcement:
+    name: routing-enforcement
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Materialize protected and effective candidate routing bytes as inert public data
+        shell: bash
+        run: |
+          python - <<'PY'
+          import io
+          import json
+          import os
+          import pathlib
+          import tarfile
+          import urllib.request
+
+          event = json.loads(pathlib.Path(os.environ["GITHUB_EVENT_PATH"]).read_text(encoding="utf-8"))
+          pull = event["pull_request"]
+          base_repository = pull["base"]["repo"]["full_name"]
+          merge_ref = f"refs/pull/{pull['number']}/merge"
+          snapshots = {
+              "protected-base": (base_repository, pull["base"]["sha"]),
+              "candidate": (base_repository, merge_ref),
+          }
+
+          for destination, (repository, revision) in snapshots.items():
+              url = f"https://codeload.github.com/{repository}/tar.gz/{revision}"
+              request = urllib.request.Request(url, headers={"User-Agent": "gcl-ghos-routing-gate"})
+              with urllib.request.urlopen(request, timeout=60) as response:
+                  archive = response.read()
+
+              root = pathlib.Path(destination)
+              root.mkdir(parents=True, exist_ok=True)
+              with tarfile.open(fileobj=io.BytesIO(archive), mode="r:gz") as bundle:
+                  for member in bundle.getmembers():
+                      parts = pathlib.PurePosixPath(member.name).parts
+                      if len(parts) < 2:
+                          continue
+                      relative = pathlib.PurePosixPath(*parts[1:])
+                      text = relative.as_posix()
+                      relevant = (
+                          text == ".ghos-routing/workflows.json"
+                          or text.startswith(".github/workflows/")
+                      )
+                      if not relevant:
+                          continue
+                      if ".." in relative.parts or relative.is_absolute():
+                          raise SystemExit(f"unsafe archive path: {text}")
+                      if not member.isfile():
+                          raise SystemExit(f"routing input must be a regular file: {text}")
+                      source = bundle.extractfile(member)
+                      if source is None:
+                          raise SystemExit(f"unable to read routing input: {text}")
+                      target = root.joinpath(*relative.parts)
+                      target.parent.mkdir(parents=True, exist_ok=True)
+                      target.write_bytes(source.read())
+          PY
+      - name: Reject enforcement self-modification
+        shell: bash
+        run: |
+          cmp --silent \
+            protected-base/.github/workflows/ghos-routing-enforcement-v2.yml \
+            candidate/.github/workflows/ghos-routing-enforcement-v2.yml || {
+              echo "GH-OS routing enforcement workflow may not be changed through an ordinary candidate PR"
+              exit 1
+            }
+      - name: Fetch and verify externally governed routing gate
+        shell: bash
+        run: |
+          mkdir -p policy-runtime/scripts
+          curl --fail --location --retry 3 \
+            https://raw.githubusercontent.com/grandchallenge/.github/ef1cce6029233a68cf46063cea2384772fcae613/scripts/ghos_execution_routing_gate.py \
+            --output policy-runtime/scripts/ghos_execution_routing_gate.py
+          echo "fc0a9a4d20de72e9fbc04c8cd54cffc3a6e4657fb09e7978b360616bd5e94a17  policy-runtime/scripts/ghos_execution_routing_gate.py" | sha256sum --check --strict
+      - name: Install routing gate dependency
+        run: |
+          python -m pip install --disable-pip-version-check --no-deps --only-binary=:all: PyYAML==6.0.3
+      - name: Execute external gate against effective candidate bytes
+        shell: bash
+        run: |
+          python -c 'import runpy,sys; runpy.run_path(sys.argv.pop(1), run_name="__main__")' policy-runtime/scripts/ghos_execution_routing_gate.py \
+            --root candidate \
+            --repository "$GITHUB_REPOSITORY"
