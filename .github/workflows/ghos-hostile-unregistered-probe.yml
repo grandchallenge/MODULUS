@@ -1,0 +1,14 @@
+name: GHOS hostile unregistered routing probe
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  inert-hostile-probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Inert routing coverage probe
+        run: echo "GHOS inert unregistered workflow probe"
