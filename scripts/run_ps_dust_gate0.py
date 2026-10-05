@@ -95,6 +95,10 @@ def run_fixture(*, dimension: int, populations: list[int], seeds: int, sigma: fl
         "populations": populations,
         "seeds": seeds,
         "sigma": sigma,
+        "environment": {
+            "jax_version": jax.__version__,
+            "backend": jax.default_backend(),
+        },
         "rows": rows,
     }
 
