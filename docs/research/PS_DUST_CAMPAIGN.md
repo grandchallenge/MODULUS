@@ -1,6 +1,6 @@
 # PS-DUST — Structured Perturbations for Forward-Only Credit Assignment
 
-Status: `ACTIVE_BOUNDED_PILOT`
+Status: `STOPPED_AT_GATE1`
 
 Authority surface: `grandchallenge/MODULUS`
 
@@ -187,6 +187,28 @@ Each later claim requires its own admitted experiment.
 
 MODULUS already treats geometry as a first-class optimizer control surface, supports hyperspherical/Hyperball dynamics, tangent projection, orthogonal LoRA steering, and reproducible ablation tooling.  PS-DUST extends that remit from geometric treatment of backpropagated updates to the geometry of forward-only credit estimation.  It is therefore execution-adjacent to MODULUS without changing MODULUS into a general training framework.
 
-## Immediate next action
+## Final bounded disposition
 
-Complete WP00 through protected CI, retain the deterministic fixture, then execute WP01 against the exact DUST source lock.  No training-scale allocation is authorized until the WP01 kill/advance decision is recorded.
+WP00 integrated successfully and WP01-A executed under the source lock and pre-outcome
+amendments A001-A004.
+
+The held-out initialization screen returned `STOPPED_AT_GATE1`:
+
+- no registered candidate achieved the required `>=2x` draw-equivalent population
+  reduction on any baseline-reachable held-out site;
+- `hadamard_independent` improved fixed-`K` relative-L2 but did not move the first
+  target crossing below the Gaussian `K=512` crossing;
+- paired-chunk variants did not satisfy the population-efficiency criterion.
+
+Canonical result summary:
+
+- `docs/research/PS_DUST_WP01_A_RESULT.md`;
+- calibration evidence:
+  `experiments/ps_dust/PS_DUST_WP01_A_CALIBRATION_001.json`;
+- held-out evidence:
+  `experiments/ps_dust/PS_DUST_WP01_A_HELDOUT_001.json`.
+
+Per the preregistered stop rule, WP01-B trained-checkpoint confirmation, WP02 matched-compute
+training, and WP03 tangent-coordinate coupling are not authorized under this campaign
+hypothesis. Any future use of the fixed-budget Hadamard quality signal requires a new
+registered hypothesis rather than weakening this campaign's threshold.
