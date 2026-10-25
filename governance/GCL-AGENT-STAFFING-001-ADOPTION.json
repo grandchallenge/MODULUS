@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0.0",
+  "repository": "grandchallenge/MODULUS",
+  "standard": "GCL-AGENT-STAFFING-001",
+  "standard_version": "1.0.0",
+  "standard_commit": "94e94ddf2d4158494c084d0acaff04009971c16c",
+  "standard_sha256": "f461765ab5c47e49306a3215fd20b1419279f1a4633c92bdbaea0b9a0f2a7134",
+  "authority": {"repository": "grandchallenge/INTELLECT", "directive": "GI-STEWARD-0003", "effective_commit": "7e01dc6b1be46171f0cba5e140ca881f6ab2f50f"},
+  "repository_head": "bdc236cb50b25d234451bf05a36ce7da49256870",
+  "status": "effective",
+  "exceptions": [],
+  "unresolved_obligations": [],
+  "claim_boundaries": {"mathematical_certification": false, "production_activation": false, "safety_authority": false, "credential_authority": false, "destructive_authority": false}
+}

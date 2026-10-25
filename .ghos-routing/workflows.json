@@ -1,0 +1,64 @@
+{
+  "record_type": "GHOS_EXECUTION_ROUTING_REGISTRY",
+  "schema_version": "1.0.0",
+  "repository": "grandchallenge/MODULUS",
+  "controllers": [
+    {
+      "controller_id": "GITHUB_ACTIONS",
+      "executor_class": "PERSISTENT_CONTROLLER",
+      "provider": "github",
+      "durable_wake_mechanism": "repository-bound GitHub Actions event queue",
+      "state_store": "GitHub Actions workflow run and job records bound to repository and commit SHA",
+      "supported_features": [
+        "AUTONOMOUS_WAKE",
+        "EXTERNAL_REUSABLE_JOB",
+        "EXTERNAL_WAIT",
+        "NON_RECONCILABLE_MUTATION",
+        "OPAQUE_EXECUTION",
+        "SCHEDULED",
+        "SECRET_CREDENTIAL",
+        "UNATTENDED_DISPATCH",
+        "WRITE_CAPABLE"
+      ]
+    }
+  ],
+  "workflows": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "observed_features": [
+        "OPAQUE_EXECUTION"
+      ],
+      "topology": "PERSISTENT_CONTROLLER_REQUIRED",
+      "controller_id": "GITHUB_ACTIONS"
+    },
+    {
+      "path": ".github/workflows/gcl-conformance.yml",
+      "observed_features": [
+        "AUTONOMOUS_WAKE",
+        "EXTERNAL_REUSABLE_JOB",
+        "OPAQUE_EXECUTION",
+        "SCHEDULED"
+      ],
+      "topology": "PERSISTENT_CONTROLLER_REQUIRED",
+      "controller_id": "GITHUB_ACTIONS"
+    },
+    {
+      "path": ".github/workflows/ghos-routing-enforcement-v2.yml",
+      "observed_features": [
+        "OPAQUE_EXECUTION"
+      ],
+      "topology": "PERSISTENT_CONTROLLER_REQUIRED",
+      "controller_id": "GITHUB_ACTIONS"
+    }
+  ],
+  "claim_boundaries": {
+    "constitutional": false,
+    "merge": false,
+    "certification": false,
+    "production": false,
+    "publication": false,
+    "mathematical_claim": false,
+    "claim_promotion": false,
+    "commercial": false
+  }
+}
