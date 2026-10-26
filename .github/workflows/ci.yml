@@ -72,7 +72,7 @@ jobs:
       - name: Run quick benchmark
         run: |
           rm -rf artifacts/benchmarks/ci_run
-          python scripts/run_benchmarks.py --steps 20 --warmup-steps 3 --batch-size 32 --width 64 --out-dir artifacts/benchmarks/ci_run
+          python scripts/run_benchmarks.py --steps 20 --warmup-steps 3 --batch-size 4 --width 32 --num-heads 4 --num-layers 1 --seq-len 32 --vocab-size 256 --grad-accum-steps 1 --out-dir artifacts/benchmarks/ci_run
 
       - name: Build benchmark report
         run: python scripts/build_benchmark_report.py --run-dir artifacts/benchmarks/ci_run --with-plots
