@@ -63,15 +63,13 @@ class RoutingStandardTest(unittest.TestCase):
         self.assertGreaterEqual(result["registered_tests"], 1)
 
     def test_discovered_test_with_executing_check(self):
-        (self.root / "tests/test_alpha_new.py").write_text("pass
-")
+        (self.root / "tests/test_alpha_new.py").write_text("pass\n")
         result = router.validate(self.root)
         self.assertEqual(result["registered_tests"], 1)
         self.assertEqual(router.classify(self.root, ["tests/test_alpha_new.py"])["checks"], ["ci"])
 
     def test_new_unowned_test_rejected_without_baseline_change(self):
-        (self.root / "tests/test_other_new.py").write_text("pass
-")
+        (self.root / "tests/test_other_new.py").write_text("pass\n")
         with self.assertRaisesRegex(router.RoutingError, "new test without declared owner"):
             router.validate(self.root)
         self.config["legacy_test_paths"].append("tests/test_other_new.py")
@@ -86,8 +84,7 @@ class RoutingStandardTest(unittest.TestCase):
         row = component(checks=("ci",), test_prefixes=("ci/test_alpha_",))
         self.write_component(row)
         (self.root / "ci").mkdir()
-        (self.root / "ci/test_alpha_new.py").write_text("pass
-")
+        (self.root / "ci/test_alpha_new.py").write_text("pass\n")
         with self.assertRaisesRegex(router.RoutingError, "no executing discovered check"):
             router.validate(self.root)
 
