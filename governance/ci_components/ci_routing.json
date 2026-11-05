@@ -1,0 +1,19 @@
+{
+  "contract_id": "GCL-CIR-001",
+  "version": "1.0.0",
+  "component_id": "ci_routing",
+  "owner": "MODULUS governed CI engineering",
+  "paths": {
+    "exact": [],
+    "prefixes": [
+      "governance/ci_routing/"
+    ],
+    "test_prefixes": [
+      "modulus/tests/test_gcl_component_"
+    ]
+  },
+  "depends_on": [],
+  "checks": [
+    "modulus-pytest"
+  ]
+}
