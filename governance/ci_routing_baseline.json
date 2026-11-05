@@ -1,0 +1,30 @@
+{
+  "contract_id": "GCL-CIR-001",
+  "version": "1.0.0",
+  "repository": "grandchallenge/MODULUS",
+  "mode": "ENFORCE_DISCOVERY_PRESERVE_EXISTING_CI",
+  "checks": [
+    {
+      "id": "modulus-pytest",
+      "test_globs": [
+        "modulus/tests/test_*.py"
+      ]
+    }
+  ],
+  "legacy_test_paths": [
+    "modulus/tests/test_gcl_ghos_modulus_owner_controls_receipt.py",
+    "modulus/tests/test_gcl_ghos_modulus_post_repair_readback.py",
+    "modulus/tests/test_gcl_ghos_modulus_post_repair_readback_evidence.py",
+    "modulus/tests/test_groups.py",
+    "modulus/tests/test_harness.py",
+    "modulus/tests/test_hyperball.py",
+    "modulus/tests/test_lora_grad.py",
+    "modulus/tests/test_modulus_rc_merge_cure.py",
+    "modulus/tests/test_online_contracts.py",
+    "modulus/tests/test_online_controllers.py",
+    "modulus/tests/test_online_telemetry.py",
+    "modulus/tests/test_presets.py",
+    "modulus/tests/test_regret_authority_pin.py",
+    "modulus/tests/test_structured_zeroth_order.py"
+  ]
+}
