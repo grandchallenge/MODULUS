@@ -17,7 +17,7 @@ sys.modules[spec.name] = router
 spec.loader.exec_module(router)
 
 
-def component(name="alpha", *, deps=(), checks=("ci",), exact=(), test_prefixes=("tests/test_alpha_",)):
+def component(\n    name="alpha", *, deps=(), checks=("ci",), exact=(), test_prefixes=("tests/test_alpha_",)\n):
     return {
         "contract_id": "GCL-CIR-001",
         "version": "1.0.0",
@@ -87,7 +87,7 @@ class RoutingStandardTest(unittest.TestCase):
             router.validate(self.root)
 
     def test_dependency_closure_and_unknown_fallback(self):
-        self.write_component(component("beta", deps=("alpha",), test_prefixes=("tests/test_beta_",)))
+        self.write_component(\n            component("beta", deps=("alpha",), test_prefixes=("tests/test_beta_",))\n        )
         routed = router.classify(self.root, ["research/alpha/spec.json"])
         self.assertEqual(routed["components"], ["alpha", "beta"])
         self.assertEqual(routed["checks"], ["ci"])
@@ -105,7 +105,7 @@ class RoutingStandardTest(unittest.TestCase):
         with self.assertRaisesRegex(router.RoutingError, "unknown dependency"):
             router.validate(self.root)
         self.write_component(component("alpha", deps=("beta",)))
-        self.write_component(component("beta", deps=("alpha",), test_prefixes=("tests/test_beta_",)))
+        self.write_component(\n            component("beta", deps=("alpha",), test_prefixes=("tests/test_beta_",))\n        )
         with self.assertRaisesRegex(router.RoutingError, "dependency cycle"):
             router.validate(self.root)
 
