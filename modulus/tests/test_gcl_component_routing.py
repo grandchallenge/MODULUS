@@ -17,7 +17,9 @@ sys.modules[spec.name] = router
 spec.loader.exec_module(router)
 
 
-def component(\n    name="alpha", *, deps=(), checks=("ci",), exact=(), test_prefixes=("tests/test_alpha_",)\n):
+def component(
+    name="alpha", *, deps=(), checks=("ci",), exact=(), test_prefixes=("tests/test_alpha_",)
+):
     return {
         "contract_id": "GCL-CIR-001",
         "version": "1.0.0",
@@ -61,13 +63,15 @@ class RoutingStandardTest(unittest.TestCase):
         self.assertGreaterEqual(result["registered_tests"], 1)
 
     def test_discovered_test_with_executing_check(self):
-        (self.root / "tests/test_alpha_new.py").write_text("pass\n")
+        (self.root / "tests/test_alpha_new.py").write_text("pass
+")
         result = router.validate(self.root)
         self.assertEqual(result["registered_tests"], 1)
         self.assertEqual(router.classify(self.root, ["tests/test_alpha_new.py"])["checks"], ["ci"])
 
     def test_new_unowned_test_rejected_without_baseline_change(self):
-        (self.root / "tests/test_other_new.py").write_text("pass\n")
+        (self.root / "tests/test_other_new.py").write_text("pass
+")
         with self.assertRaisesRegex(router.RoutingError, "new test without declared owner"):
             router.validate(self.root)
         self.config["legacy_test_paths"].append("tests/test_other_new.py")
@@ -82,12 +86,15 @@ class RoutingStandardTest(unittest.TestCase):
         row = component(checks=("ci",), test_prefixes=("ci/test_alpha_",))
         self.write_component(row)
         (self.root / "ci").mkdir()
-        (self.root / "ci/test_alpha_new.py").write_text("pass\n")
+        (self.root / "ci/test_alpha_new.py").write_text("pass
+")
         with self.assertRaisesRegex(router.RoutingError, "no executing discovered check"):
             router.validate(self.root)
 
     def test_dependency_closure_and_unknown_fallback(self):
-        self.write_component(\n            component("beta", deps=("alpha",), test_prefixes=("tests/test_beta_",))\n        )
+        self.write_component(
+            component("beta", deps=("alpha",), test_prefixes=("tests/test_beta_",))
+        )
         routed = router.classify(self.root, ["research/alpha/spec.json"])
         self.assertEqual(routed["components"], ["alpha", "beta"])
         self.assertEqual(routed["checks"], ["ci"])
@@ -105,7 +112,9 @@ class RoutingStandardTest(unittest.TestCase):
         with self.assertRaisesRegex(router.RoutingError, "unknown dependency"):
             router.validate(self.root)
         self.write_component(component("alpha", deps=("beta",)))
-        self.write_component(\n            component("beta", deps=("alpha",), test_prefixes=("tests/test_beta_",))\n        )
+        self.write_component(
+            component("beta", deps=("alpha",), test_prefixes=("tests/test_beta_",))
+        )
         with self.assertRaisesRegex(router.RoutingError, "dependency cycle"):
             router.validate(self.root)
 
