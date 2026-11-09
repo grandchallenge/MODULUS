@@ -8,4 +8,4 @@ optax==0.2.8
 # python -m pip install "flax==0.10.4"
 
 # Dev/test
-pytest==9.1.1
+pytest==9.2.0
