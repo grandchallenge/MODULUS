@@ -1,0 +1,6 @@
+
+[colab] A new version of Colab CLI is available: 0.8.0 (current: 0.7.4)
+[colab] Run 'colab update' to update.
+[colab] To silence this check, set "enable_update_check": false in ~/.config/colab-cli/settings.json
+
+{"event": "gpu_stress_PASS", "device": "NVIDIA L4", "torch": "2.14.1+cu130", "counts": {"spectral": 120, "phase_lipschitz": 120, "dense_equivalence": 120, "autograd_fd": 10, "causal_prefix": 60, "batch_independence": 60, "state_roundtrip": 5}, "max_dense_diff": 1.1920928955078125e-07}

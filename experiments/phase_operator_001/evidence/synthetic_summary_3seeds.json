@@ -1,0 +1,156 @@
+{
+  "experiment": "PHASE-OPERATOR-001-G3b-L4",
+  "accelerator": "NVIDIA L4",
+  "torch": "2.14.1+cu130",
+  "steps_per_run": 1000,
+  "total_training_runs": 30,
+  "total_training_steps": 30000,
+  "source_sha256": "c5163d1cb1ec9b5125fcaae8dc38e5eeb6d1170e4ffdb8fa65e0de6230bceea2",
+  "raw_log_sha256": {
+    "42": "b7174300800b44b94a6db7d53409403852cf5a50e66e6cf7df262e7be6886020",
+    "43": "ce176ce1f829f18f6d267aa3b8f244fed2444775399f758c94bc0bd3c7e2a674",
+    "44": "e7f991a4aea6ba27ac4906cc62ac80a3a25730778e88056d5f6b04fe78b19549"
+  },
+  "results": [
+    {
+      "phase_scale": 0.3,
+      "variant": "joint",
+      "trainable_params": 1801,
+      "id_mean": 0.5119594832261404,
+      "id_sd": 0.04113367432046541,
+      "ood_mean": 0.5988736152648926,
+      "ood_sd": 0.030169170455277085,
+      "seeds": [
+        42,
+        43,
+        44
+      ]
+    },
+    {
+      "phase_scale": 0.3,
+      "variant": "svd",
+      "trainable_params": 1801,
+      "id_mean": 0.4898537794748942,
+      "id_sd": 0.34026501214761495,
+      "ood_mean": 0.5284482737382253,
+      "ood_sd": 0.30715086677785663,
+      "seeds": [
+        42,
+        43,
+        44
+      ]
+    },
+    {
+      "phase_scale": 0.3,
+      "variant": "oracle",
+      "trainable_params": 265,
+      "id_mean": 8.950516772188166e-09,
+      "id_sd": 1.1334854549978572e-08,
+      "ood_mean": 9.225396890855109e-09,
+      "ood_sd": 7.956405534004598e-09,
+      "seeds": [
+        42,
+        43,
+        44
+      ]
+    },
+    {
+      "phase_scale": 0.3,
+      "variant": "real",
+      "trainable_params": 1933,
+      "id_mean": 0.2512401317556699,
+      "id_sd": 0.162984749606401,
+      "ood_mean": 0.4026360313097636,
+      "ood_sd": 0.13860421668855286,
+      "seeds": [
+        42,
+        43,
+        44
+      ]
+    },
+    {
+      "phase_scale": 0.3,
+      "variant": "lora",
+      "trainable_params": 1536,
+      "id_mean": 0.08629343658685684,
+      "id_sd": 0.010628577573133666,
+      "ood_mean": 0.3142862717310588,
+      "ood_sd": 0.07834241746513161,
+      "seeds": [
+        42,
+        43,
+        44
+      ]
+    },
+    {
+      "phase_scale": 1.5,
+      "variant": "joint",
+      "trainable_params": 1801,
+      "id_mean": 0.6255353490511576,
+      "id_sd": 0.0844709374298144,
+      "ood_mean": 0.6396239002545675,
+      "ood_sd": 0.07713493913127492,
+      "seeds": [
+        42,
+        43,
+        44
+      ]
+    },
+    {
+      "phase_scale": 1.5,
+      "variant": "svd",
+      "trainable_params": 1801,
+      "id_mean": 0.7447517911593119,
+      "id_sd": 0.2876034128907703,
+      "ood_mean": 0.732411116361618,
+      "ood_sd": 0.279902703794577,
+      "seeds": [
+        42,
+        43,
+        44
+      ]
+    },
+    {
+      "phase_scale": 1.5,
+      "variant": "oracle",
+      "trainable_params": 265,
+      "id_mean": 9.483348094363464e-06,
+      "id_sd": 3.4415230095489217e-06,
+      "ood_mean": 9.483349610187966e-06,
+      "ood_sd": 3.441523166510027e-06,
+      "seeds": [
+        42,
+        43,
+        44
+      ]
+    },
+    {
+      "phase_scale": 1.5,
+      "variant": "real",
+      "trainable_params": 1933,
+      "id_mean": 0.6487930417060852,
+      "id_sd": 0.036125191977519906,
+      "ood_mean": 1.1822662353515625,
+      "ood_sd": 0.14981467822446826,
+      "seeds": [
+        42,
+        43,
+        44
+      ]
+    },
+    {
+      "phase_scale": 1.5,
+      "variant": "lora",
+      "trainable_params": 1536,
+      "id_mean": 0.8817170262336731,
+      "id_sd": 0.014236740029205741,
+      "ood_mean": 1.1632070938746135,
+      "ood_sd": 0.11557195778448243,
+      "seeds": [
+        42,
+        43,
+        44
+      ]
+    }
+  ]
+}

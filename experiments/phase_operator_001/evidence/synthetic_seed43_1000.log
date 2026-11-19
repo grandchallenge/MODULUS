@@ -1,0 +1,17 @@
+
+[colab] A new version of Colab CLI is available: 0.8.0 (current: 0.7.4)
+[colab] Run 'colab update' to update.
+[colab] To silence this check, set "enable_update_check": false in ~/.config/colab-cli/settings.json
+
+{"event": "env", "seed": 43, "gpu": "NVIDIA L4", "torch": "2.14.1+cu130", "test": {"spectral_norm": 0.8175750374794006, "gain": 0.8175744414329529, "difference": 1.6236554384231567, "bound": 2.3745086193084717, "gradient": -0.09643588215112686, "finite_difference": -0.09638071060180664}}
+{"event": "result", "seed": 43, "scale": 0.3, "kind": "joint", "steps": 1000, "params": 1801, "loss": 0.04734731838107109, "id": 0.47911718487739563, "ood": 0.5738041996955872, "seconds": 3.65}
+{"event": "result", "seed": 43, "scale": 0.3, "kind": "svd", "steps": 1000, "params": 1801, "loss": 0.020544901490211487, "id": 0.24545764923095703, "ood": 0.2811571955680847, "seconds": 3.65}
+{"event": "result", "seed": 43, "scale": 0.3, "kind": "oracle", "steps": 1000, "params": 265, "loss": 2.7469904129162614e-10, "id": 2.5335584741270623e-09, "ood": 1.989370002064561e-09, "seconds": 2.95}
+{"event": "result", "seed": 43, "scale": 0.3, "kind": "real", "steps": 1000, "params": 1933, "loss": 0.022292837500572205, "id": 0.4045139253139496, "ood": 0.5124101638793945, "seconds": 3.22}
+{"event": "result", "seed": 43, "scale": 0.3, "kind": "lora", "steps": 1000, "params": 1536, "loss": 0.007368203718215227, "id": 0.09329847246408463, "ood": 0.28247717022895813, "seconds": 2.16}
+{"event": "result", "seed": 43, "scale": 1.5, "kind": "joint", "steps": 1000, "params": 1801, "loss": 0.04579455405473709, "id": 0.540092408657074, "ood": 0.5597376227378845, "seconds": 3.62}
+{"event": "result", "seed": 43, "scale": 1.5, "kind": "svd", "steps": 1000, "params": 1801, "loss": 0.03682892397046089, "id": 0.4693114757537842, "ood": 0.45552805066108704, "seconds": 3.64}
+{"event": "result", "seed": 43, "scale": 1.5, "kind": "oracle", "steps": 1000, "params": 265, "loss": 7.624129239047761e-07, "id": 8.851940037857275e-06, "ood": 8.851943675836083e-06, "seconds": 2.9}
+{"event": "result", "seed": 43, "scale": 1.5, "kind": "real", "steps": 1000, "params": 1933, "loss": 0.05895986780524254, "id": 0.6873134970664978, "ood": 1.022849678993225, "seconds": 3.21}
+{"event": "result", "seed": 43, "scale": 1.5, "kind": "lora", "steps": 1000, "params": 1536, "loss": 0.0749143734574318, "id": 0.8709434866905212, "ood": 1.135520577430725, "seconds": 2.16}
+{"event": "DONE", "seed": 43}
