@@ -1,0 +1,35 @@
+{
+  "source_map": {
+    "substantial_synthetic.py": {
+      "executed_source_sha256": "c5163d1cb1ec9b5125fcaae8dc38e5eeb6d1170e4ffdb8fa65e0de6230bceea2",
+      "committed_source_sha256": "c39c305f07f55a28836f84c11d7f2f13310b86828769a950c9ec66ddf14f7f9c",
+      "difference": "trailing blank lines only"
+    },
+    "substantial_tinystories.py": {
+      "executed_source_sha256": "fe0e835ac65fcb24d6bb54fcc3219604185549c230ab52bf5b839cc8204977c5",
+      "committed_source_sha256": "954b89362a16da8ea11d553eb160e75320d6f61c00cdd0cc6feeec8dfad86e84",
+      "difference": "trailing blank lines only"
+    },
+    "wikitext_transfer.py": {
+      "executed_source_sha256": "d76b1f630f69e8510644496aeaa7d42b3465f79a8ac6beb79ec09084ae52cc27",
+      "committed_source_sha256": "80f30e1ef57e687667754f2b6add8308814b5be4caa4e4d1d7e1ff25b2aa702e",
+      "difference": "trailing blank lines only"
+    },
+    "followup_adapters.py": {
+      "executed_source_sha256": "8ab9984ec4f588a13e245b16a74737af25a16b483f3bf54fe0fd1ac86997dd25",
+      "committed_source_sha256": "e8857bfcdece011bf63ce00407cdcf092d7817c130cdd874a77e9197697898ab",
+      "difference": "trailing blank lines only"
+    },
+    "frontier_sweep.py": {
+      "executed_source_sha256": "7e895d354da938fd11f9d12ae426236af8fa79b698007908694584012e0ee4c2",
+      "committed_source_sha256": "7f477ea5e239e1d8ac71e842c6bd577f9a02e304e2fd409fff43247c4499873d",
+      "difference": "trailing blank lines only"
+    },
+    "stress_tests.py": {
+      "executed_source_sha256": "5070c111703e8ba68d361166336d81da71282f8bd91231c1884bab2506206e0b",
+      "committed_source_sha256": "6214eeac39018132eb6471752cf03f4308ce6e0af849b0ca088e3cbc3c498af0",
+      "difference": "trailing blank lines only"
+    }
+  },
+  "claim_boundary": "Execution occurred before trailing newline normalization; no change to executable statements. Exact executed source hashes remain recorded."
+}
